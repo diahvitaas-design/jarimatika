@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Game Digital Jarimatika Ceria</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --sky: #0284C7;
+      --sky-light: #E0F2FE;
+      --green: #16A34A;
+      --green-light: #DCFCE7;
+      --yellow: #FACC15;
+      --red: #EF4444;
+      --text: #1E293B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #C084FC 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(2px);
+      pointer-events: none;
+      animation: floatUpward 10s infinite linear;
+    }
+    @keyframes floatUpward {
+      0% { transform: translateY(105vh) scale(0.8); opacity: 0; }
+      20% { opacity: 0.7; }
+      80% { opacity: 0.7; }
+      100% { transform: translateY(-15vh) scale(1.2); opacity: 0; }
+    }
+
+    #game-container {
+      width: 98vw;
+      max-width: 1300px;
+      height: 96vh;
+      background: #F8FAFC;
+      border: 6px solid #FFFFFF;
+      border-radius: 32px;
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35), 0 0 35px rgba(255,255,255,0.4);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      z-index: 5;
+    }
+
+    header {
+      background: linear-gradient(90deg, #0284C7, #4F46E5, #9333EA);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      font-size: 2rem;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25));
+      animation: handWave 2.5s infinite ease-in-out;
+    }
+    @keyframes handWave {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(14deg) scale(1.1); }
+      75% { transform: rotate(-10deg); }
+    }
+
+    .btn-top {
+      background: linear-gradient(180deg, #FEF08A, #FACC15);
+      border: 3px solid #CA8A04;
+      color: #713F12;
+      font-size: 0.95rem;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 18px;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #A16207;
+      transition: all 0.15s;
+    }
+    .btn-top:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #A16207;
+    }
+
+    .screen {
+      display: none;
+      flex: 1;
+      padding: 14px 20px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-y: auto;
+      position: relative;
+    }
+    .screen.active {
+      display: flex;
+      animation: screenEnter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes screenEnter {
+      0% { opacity: 0; transform: scale(0.94); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* BERANDA */
+    .home-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      width: 100%;
+      max-width: 900px;
+      margin-top: 10px;
+    }
+
+    .card-menu {
+      background: white;
+      border: 4px solid #E0E7FF;
+      border-radius: 24px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      box-shadow: 0 8px 0 #CBD5E1;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .card-menu:hover {
+      transform: translateY(-6px);
+      border-color: #6366F1;
+      box-shadow: 0 14px 0 #A5B4FC;
+    }
+    .card-menu:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 #A5B4FC;
+    }
+
+    .card-icon-badge {
+      width: 68px;
+      height: 68px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.3rem;
+      flex-shrink: 0;
+      box-shadow: inset 0 -3px 0 rgba(0,0,0,0.15);
+    }
+
+    /* FULLSCREEN TUTORIAL */
+    .tab-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .tab-btn {
+      padding: 8px 18px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      border: 3px solid #CBD5E1;
+      background: white;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #CBD5E1;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #0284C7, #0EA5E9);
+      color: white;
+      border-color: #0369A1;
+      box-shadow: 0 3px 0 #075985;
+      transform: translateY(2px);
+    }
+
+    /* FINGERS RENDERER */
+    .hands-box {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      align-items: center;
+      margin: 6px 0;
+    }
+    .hand-card {
+      background: white;
+      padding: 10px 14px;
+      border-radius: 20px;
+      border: 3px dashed #93C5FD;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .finger-lane {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      height: 165px;
+    }
+    .finger-item {
+      width: 36px;
+      background: #FED7AA;
+      border: 3px solid #EA580C;
+      border-radius: 18px 18px 8px 8px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      padding: 3px 0;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .finger-item.folded {
+      height: 48px !important;
+      background: #E2E8F0;
+      border-color: #64748B;
+      opacity: 0.7;
+    }
+    .finger-badge {
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: #9A3412;
+      background: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #EA580C;
+    }
+    .finger-item.folded .finger-badge {
+      color: #64748B;
+      border-color: #64748B;
+    }
+    .joint-dot {
+      width: 8px;
+      height: 8px;
+      background: #DC2626;
+      border-radius: 50%;
+    }
+
+    /* KOTAK PENJELASAN RAPI BERDERET */
+    .calc-board-container {
+      background: #FFFFFF;
+      border: 3px solid #38BDF8;
+      border-left: 8px solid #0284C7;
+      border-radius: 18px;
+      padding: 12px 20px;
+      width: 100%;
+      max-width: 820px;
+      box-shadow: 0 6px 15px rgba(2, 132, 199, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .calc-row {
+      display: flex;
+      align-items: center;
+      font-size: 1.05rem;
+      color: #1E293B;
+    }
+
+    /* SETUP SCREEN */
+    .setup-box {
+      background: white;
+      border: 4px solid #E0E7FF;
+      border-radius: 26px;
+      padding: 22px;
+      width: 100%;
+      max-width: 780px;
+      box-shadow: 0 10px 0 #CBD5E1;
+      text-align: center;
+    }
+    .input-field {
+      width: 100%;
+      max-width: 380px;
+      font-size: 1.2rem;
+      font-weight: 800;
+      padding: 10px;
+      border: 3px solid #38BDF8;
+      border-radius: 16px;
+      outline: none;
+      text-align: center;
+      background: #F0F9FF;
+    }
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .btn-level {
+      padding: 12px;
+      border-radius: 16px;
+      border: 3px solid #CBD5E1;
+      background: #F8FAFC;
+      cursor: pointer;
+      font-weight: 800;
+      box-shadow: 0 4px 0 #CBD5E1;
+    }
+    .btn-level.active {
+      transform: translateY(2px);
+      border-color: #0284C7;
+      background: #E0F2FE;
+      box-shadow: 0 2px 0 #0284C7;
+    }
+
+    .quota-flex {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 10px 0;
+    }
+    .btn-quota {
+      padding: 6px 14px;
+      border: 2px solid #CBD5E1;
+      background: white;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #CBD5E1;
+    }
+    .btn-quota.active {
+      background: #38BDF8 !important;
+      color: white !important;
+      border-color: #0284C7 !important;
+      box-shadow: 0 3px 0 #0284C7 !important;
+    }
+
+    .btn-start {
+      background: linear-gradient(180deg, #22C55E, #16A34A);
+      color: white;
+      font-size: 1.25rem;
+      font-weight: 900;
+      padding: 12px 40px;
+      border: 3px solid #15803D;
+      border-radius: 20px;
+      box-shadow: 0 6px 0 #166534;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .btn-start:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #166534;
+    }
+
+    /* IN-GAME HUD & PROGRES */
+    .progress-hud-bar {
+      width: 100%;
+      background: #E2E8F0;
+      height: 10px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 4px 0 10px 0;
+      flex-shrink: 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #38BDF8, #22C55E);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .game-arena {
+      width: 100%;
+      flex: 1;
+      display: flex;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .pure-question-card {
+      background: #FFFFFF;
+      border: 3px solid #60A5FA;
+      border-radius: 18px;
+      padding: 12px 16px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      min-height: 85px;
+      max-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: 0 4px 0 #93C5FD;
+      line-height: 1.4;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    /* PERBAIKAN NUMPAD: COMPACT & ANTI-POTONG */
+    .numpad-box {
+      background: white;
+      border: 3px solid #E2E8F0;
+      border-radius: 20px;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 5px 0 #CBD5E1;
+      flex-shrink: 0;
+    }
+    .screen-input-ans {
+      width: 100%;
+      max-width: 290px;
+      height: 46px;
+      background: #FEF9C3;
+      border: 3px solid #FACC15;
+      border-radius: 14px;
+      font-size: 1.8rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #854D0E;
+      margin-bottom: 6px;
+      letter-spacing: 4px;
+    }
+    .key-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      width: 100%;
+      max-width: 290px;
+    }
+    .key-btn {
+      padding: 9px 4px;
+      font-size: 1.25rem;
+      font-weight: 900;
+      border-radius: 12px;
+      border: 2px solid #CBD5E1;
+      background: #F8FAFC;
+      box-shadow: 0 3px 0 #CBD5E1;
+      cursor: pointer;
+    }
+    .key-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #CBD5E1;
+    }
+    .key-send {
+      background: #22C55E !important;
+      color: white;
+      border-color: #16A34A !important;
+      box-shadow: 0 3px 0 #15803D !important;
+      font-size: 1.05rem;
+    }
+    .key-del {
+      background: #EF4444 !important;
+      color: white;
+      border-color: #DC2626 !important;
+      box-shadow: 0 3px 0 #B91C1C !important;
+    }
+
+    /* PAPAN TULIS */
+    .scratchpad-area {
+      display: flex;
+      flex-direction: column;
+      background: white;
+      border: 4px dashed #94A3B8;
+      border-radius: 20px;
+      padding: 10px;
+      flex: 1;
+    }
+    canvas.scratch-cvs {
+      background: #F8FAFC;
+      border: 2px solid #CBD5E1;
+      border-radius: 14px;
+      flex: 1;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    /* SPLIT SCREEN KELOMPOK */
+    .split-wrapper {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      gap: 10px;
+    }
+    .team-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border: 4px solid #CBD5E1;
+      border-radius: 22px;
+      padding: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .team-col.red { background: #FFF1F2; border-color: #FDA4AF; }
+    .team-col.blue { background: #F0F9FF; border-color: #BAE6FD; }
+
+    /* OVERLAY INTIP KELOMPOK MANDIRI (LEGA & TIDAK MEMOTONG TITIK KE-4) */
+    .overlay-intip-team {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.94);
+      backdrop-filter: blur(6px);
+      z-index: 50;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 8px;
+      color: white;
+    }
+    .overlay-intip-team.active {
+      display: flex;
+      animation: screenEnter 0.25s ease-out;
+    }
+
+    /* MODAL INTIP KHUSUS INDIVIDU (JENDELA LENGKAP & KEMBALI KE SOAL) */
+    .modal-solo-overlay {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-solo-overlay.active {
+      display: flex;
+    }
+    .modal-solo-content {
+      background: white;
+      border: 5px solid #38BDF8;
+      border-radius: 28px;
+      padding: 20px;
+      width: 92%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    /* RESULT CELEBRATION SCREEN */
+    .result-card {
+      background: white;
+      border: 5px solid #FCD34D;
+      border-radius: 30px;
+      padding: 26px;
+      width: 100%;
+      max-width: 620px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      animation: bounceCard 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes bounceCard {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .trophy-badge {
+      font-size: 4.5rem;
+      filter: drop-shadow(0 8px 12px rgba(245, 158, 11, 0.4));
+      animation: trophyFloat 2s infinite ease-in-out;
+    }
+    @keyframes trophyFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .stat-pill {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 10px;
+    }
+
+    canvas.confetti-layer {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bubble" style="width: 70px; height: 70px; left: 8%; animation-delay: 0s;"></div>
+  <div class="bubble" style="width: 110px; height: 110px; left: 30%; animation-delay: 2s;"></div>
+  <div class="bubble" style="width: 60px; height: 60px; left: 65%; animation-delay: 4s;"></div>
+  <div class="bubble" style="width: 90px; height: 90px; left: 85%; animation-delay: 1.5s;"></div>
+
+  <canvas id="confetti-canvas" class="confetti-layer"></canvas>
+
+  <div id="game-container">
+    <header>
+      <div class="brand-box">
+        <span class="brand-icon">🖐️</span>
+        <div>
+          <h2 style="font-size: 1.35rem; font-weight: 900;">Jarimatika Ceria</h2>
+          <span style="font-size: 0.8rem; color: #BAE6FD; font-weight: 700;">Petualangan Berhitung Digital SD</span>
+        </div>
+      </div>
+      <div>
+        <button class="btn-top" onclick="switchView('screen-home')">🏠 Beranda</button>
+      </div>
+    </header>
+
+    <!-- 1. SCREEN BERANDA -->
+    <div id="screen-home" class="screen active">
+      <div style="text-align: center; margin-bottom: 12px;">
+        <h1 style="font-size: 2.5rem; font-weight: 900; color: #0369A1;">Mari Berhitung Ceria!</h1>
+        <p style="color: #475569; font-weight: 700; font-size: 1.05rem;">Gunakan keajaiban jari tanganmu untuk menaklukkan perkalian!</p>
+      </div>
+
+      <div class="home-grid">
+        <div class="card-menu" onclick="openTutorialFullscreen('tut3')">
+          <div class="card-icon-badge" style="background: linear-gradient(135deg, #38BDF8, #0284C7); color: white;">📖</div>
+          <div>
+            <h3 style="font-size: 1.3rem; color: #0284C7; font-weight: 900;">Mode Tutorial</h3>
+            <p style="color: #64748B; font-weight: 600; font-size: 0.9rem;">Pelajari trik jari tangan perkalian 3, 4, 6–8, dan 9 di layar penuh!</p>
+          </div>
+        </div>
+
+        <div class="card-menu" onclick="prepareGameSetup('solo')">
+          <div class="card-icon-badge" style="background: linear-gradient(135deg, #4ADE80, #16A34A); color: white;">👤</div>
+          <div>
+            <h3 style="font-size: 1.3rem; color: #16A34A; font-weight: 900;">Mode Individu</h3>
+            <p style="color: #64748B; font-weight: 600; font-size: 0.9rem;">Tantangan mandiri dengan papan tulis hitung tanpa batas kertas.</p>
+          </div>
+        </div>
+
+        <div class="card-menu" onclick="prepareGameSetup('team')">
+          <div class="card-icon-badge" style="background: linear-gradient(135deg, #F87171, #DC2626); color: white;">👥</div>
+          <div>
+            <h3 style="font-size: 1.3rem; color: #DC2626; font-weight: 900;">Mode Kelompok</h3>
+            <p style="color: #64748B; font-weight: 600; font-size: 0.9rem;">Tanding 1 vs 1 layar terbagi dua (soal acak berbeda & intip mandiri).</p>
+          </div>
+        </div>
+
+        <div class="card-menu" onclick="showRankingView()">
+          <div class="card-icon-badge" style="background: linear-gradient(135deg, #FBBF24, #D97706); color: white;">🏆</div>
+          <div>
+            <h3 style="font-size: 1.3rem; color: #D97706; font-weight: 900;">Papan Juara</h3>
+            <p style="color: #64748B; font-weight: 600; font-size: 0.9rem;">Lihat rekor nilai kelas dan reset catatan skor kapan saja.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. SCREEN MODE TUTORIAL -->
+    <div id="screen-tutorial" class="screen">
+      <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <h2 style="color: #0284C7; font-weight: 900;">📖 Laboratorium Jarimatika</h2>
+        <button class="btn-top" onclick="switchView('screen-home')" style="background: #E2E8F0; border-color: #94A3B8; color: #334155; box-shadow: 0 4px 0 #64748B;">⬅️ Kembali ke Beranda</button>
+      </div>
+
+      <div class="tab-pills">
+        <button class="tab-btn active" id="tab-pill-tut3" onclick="switchTutorialMateri('tut3')">Perkalian 3</button>
+        <button class="tab-btn" id="tab-pill-tut4" onclick="switchTutorialMateri('tut4')">Perkalian 4</button>
+        <button class="tab-btn" id="tab-pill-tut68" onclick="switchTutorialMateri('tut68')">Perkalian 6–8</button>
+        <button class="tab-btn" id="tab-pill-tut9" onclick="switchTutorialMateri('tut9')">Perkalian 9</button>
+      </div>
+
+      <p style="font-weight: 700; color: #64748B; margin-bottom: 4px; font-size: 0.9rem;">💡 Klik atau sentuh jari tangan untuk menegakkan atau melipatnya!</p>
+
+      <div class="hands-box">
+        <div class="hand-card">
+          <span style="font-weight: 800; color: #0284C7; margin-bottom: 4px; font-size: 0.9rem;">Tangan Kiri</span>
+          <div class="finger-lane" id="tut-full-left"></div>
+        </div>
+        <div class="hand-card">
+          <span style="font-weight: 800; color: #0284C7; margin-bottom: 4px; font-size: 0.9rem;">Tangan Kanan</span>
+          <div class="finger-lane" id="tut-full-right"></div>
+        </div>
+      </div>
+
+      <div class="calc-board-container" id="tut-full-calc-text"></div>
+    </div>
+
+    <!-- 3. SCREEN SETUP -->
+    <div id="screen-setup" class="screen">
+      <div class="setup-box">
+        <h2 id="setup-header-title" style="color: #0284C7; font-weight: 900; margin-bottom: 10px;">Pengaturan Permainan</h2>
+
+        <div id="box-name-solo">
+          <label style="font-weight: 800; color: #475569;">Ketik Nama Siswa:</label><br>
+          <input type="text" id="player-solo-name" class="input-field" placeholder="Nama panggilanmu...">
+        </div>
+
+        <div id="box-name-team" style="display: none;">
+          <label style="font-weight: 800; color: #475569;">Nama Tim yang Bertanding:</label>
+          <div style="display: flex; gap: 10px; justify-content: center; margin-top: 6px;">
+            <input type="text" id="player-team-a" class="input-field" value="Tim Merah" style="border-color: #FDA4AF; width: 45%;">
+            <input type="text" id="player-team-b" class="input-field" value="Tim Biru" style="border-color: #BAE6FD; width: 45%;">
+          </div>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <label style="font-weight: 800; color: #475569;">Pilih Kategori Tantangan:</label>
+          <div class="level-grid">
+            <button class="btn-level active" id="btn-lvl-c3" onclick="setSetupLevel('C3')">
+              <span style="font-size: 1.5rem;">⚡</span><br>
+              <strong>Petualang Cepat</strong><br>
+              <small style="color: #64748B;">Perkalian Bersusun (C3)</small>
+            </button>
+            <button class="btn-level" id="btn-lvl-c4" onclick="setSetupLevel('C4')">
+              <span style="font-size: 1.5rem;">🔍</span><br>
+              <strong>Detektif Cerita</strong><br>
+              <small style="color: #64748B;">Soal Cerita Kontekstual (C4)</small>
+            </button>
+            <button class="btn-level" id="btn-lvl-master" onclick="setSetupLevel('MASTER')">
+              <span style="font-size: 1.5rem;">👑</span><br>
+              <strong>Master</strong><br>
+              <small style="color: #64748B;">Campuran C3 & C4</small>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label style="font-weight: 800; color: #475569;">Pilih Jumlah Soal:</label>
+          <div class="quota-flex">
+            <button class="btn-quota" data-quota="5" onclick="setSetupQuota(5)">5 Soal</button>
+            <button class="btn-quota active" data-quota="10" onclick="setSetupQuota(10)">10 Soal</button>
+            <button class="btn-quota" data-quota="15" onclick="setSetupQuota(15)">15 Soal</button>
+            <button class="btn-quota" data-quota="20" onclick="setSetupQuota(20)">20 Soal</button>
+            <button class="btn-quota" data-quota="25" onclick="setSetupQuota(25)">25 Soal</button>
+            <button class="btn-quota" data-quota="30" onclick="setSetupQuota(30)">30 Soal</button>
+            <button class="btn-quota" data-quota="50" onclick="setSetupQuota(50)">50 Soal</button>
+            <button class="btn-quota" data-quota="100" onclick="setSetupQuota(100)">100 Soal</button>
+          </div>
+        </div>
+
+        <div style="margin-top: 12px;">
+          <button class="btn-top" onclick="switchView('screen-home')" style="background: #E2E8F0; border-color: #94A3B8; color: #475569; box-shadow: 0 4px 0 #64748B;">Batal</button>
+          <button class="btn-start" onclick="beginGameSession()">🚀 MULAI MAIN!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. SCREEN GAMEPLAY INDIVIDU -->
+    <div id="screen-game-solo" class="screen">
+      <!-- JENDELA POPUP INTIP KHUSUS INDIVIDU (TIDAK KELUAR KE BERANDA) -->
+      <div class="modal-solo-overlay" id="modal-intip-solo">
+        <div class="modal-solo-content">
+          <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h3 style="color: #0284C7; font-weight: 900;">💡 Intip Jarimatika (Bantuan Mandiri)</h3>
+            <button class="btn-top" onclick="closeSoloModalTutorial()" style="background: #22C55E; border-color: #16A34A; color: white;">✕ Kembali Menghitung</button>
+          </div>
+          <div class="tab-pills" style="margin-bottom: 6px;">
+            <button class="tab-btn active" id="pill-solo-tut3" onclick="switchSoloModalMateri('tut3')">Perkalian 3</button>
+            <button class="tab-btn" id="pill-solo-tut4" onclick="switchSoloModalMateri('tut4')">Perkalian 4</button>
+            <button class="tab-btn" id="pill-solo-tut68" onclick="switchSoloModalMateri('tut68')">Perkalian 6–8</button>
+            <button class="tab-btn" id="pill-solo-tut9" onclick="switchSoloModalMateri('tut9')">Perkalian 9</button>
+          </div>
+          <div class="hands-box">
+            <div class="hand-card">
+              <span style="font-weight: 800; color: #0284C7; font-size: 0.85rem;">Tangan Kiri</span>
+              <div class="finger-lane" id="solo-modal-left" style="height: 155px;"></div>
+            </div>
+            <div class="hand-card">
+              <span style="font-weight: 800; color: #0284C7; font-size: 0.85rem;">Tangan Kanan</span>
+              <div class="finger-lane" id="solo-modal-right" style="height: 155px;"></div>
+            </div>
+          </div>
+          <div class="calc-board-container" id="solo-modal-calc-text" style="padding: 10px 16px;"></div>
+        </div>
+      </div>
+
+      <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+        <div>
+          <span id="hud-solo-player" style="font-size: 1.25rem; font-weight: 900; color: #0284C7;">Pemain: -</span>
+          <span id="hud-solo-category" style="margin-left: 8px; background: #E0F2FE; color: #0369A1; padding: 4px 10px; border-radius: 12px; font-weight: 800; font-size: 0.85rem;">C3</span>
+        </div>
+        <div>
+          <span id="hud-solo-counter" style="font-weight: 900; color: #64748B; margin-right: 12px;">Soal 1 / 10</span>
+          <button class="btn-top" onclick="openSoloModalTutorial()">💡 Intip Jarimatika</button>
+          <span id="hud-solo-score" style="margin-left: 10px; font-size: 1.35rem; font-weight: 900; color: #16A34A;">Skor: 0</span>
+        </div>
+      </div>
+
+      <div class="progress-hud-bar">
+        <div class="progress-fill" id="hud-solo-prog-bar"></div>
+      </div>
+
+      <div class="game-arena">
+        <div style="flex: 1.1; display: flex; flex-direction: column; gap: 8px; justify-content: space-between;">
+          <div class="pure-question-card" id="box-solo-pure-q">Hitunglah...</div>
+          <div class="numpad-box">
+            <span style="font-weight: 700; color: #64748B; font-size: 0.8rem; margin-bottom: 4px;">Ketikkan Jawaban Angka:</span>
+            <div class="screen-input-ans" id="display-solo-input">-</div>
+            <div class="key-grid">
+              <button class="key-btn" onclick="pressSoloNumpad('1')">1</button>
+              <button class="key-btn" onclick="pressSoloNumpad('2')">2</button>
+              <button class="key-btn" onclick="pressSoloNumpad('3')">3</button>
+              <button class="key-btn" onclick="pressSoloNumpad('4')">4</button>
+              <button class="key-btn" onclick="pressSoloNumpad('5')">5</button>
+              <button class="key-btn" onclick="pressSoloNumpad('6')">6</button>
+              <button class="key-btn" onclick="pressSoloNumpad('7')">7</button>
+              <button class="key-btn" onclick="pressSoloNumpad('8')">8</button>
+              <button class="key-btn" onclick="pressSoloNumpad('9')">9</button>
+              <button class="key-btn key-del" onclick="pressSoloNumpad('DEL')">⌫</button>
+              <button class="key-btn" onclick="pressSoloNumpad('0')">0</button>
+              <button class="key-btn key-send" onclick="pressSoloNumpad('OK')">⏎ Kirim</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="scratchpad-area">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-weight: 900; color: #334155;">📝 Papan Tulis</span>
+            <button class="btn-top" style="padding: 4px 10px; font-size: 0.8rem; background: #FEE2E2; border-color: #EF4444; color: #991B1B;" onclick="clearCanvasScreen('canvas-solo')">🧽 Bersihkan Papan</button>
+          </div>
+          <canvas id="canvas-solo" class="scratch-cvs"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. SCREEN GAMEPLAY KELOMPOK -->
+    <div id="screen-game-team" class="screen" style="padding: 10px;">
+      <div class="split-wrapper">
+        <!-- SISI TIM A -->
+        <div class="team-col red" id="col-team-a">
+          <!-- OVERLAY INTIP TIM A (LEGA, TITIK KE-4 TERLIHAT JELAS) -->
+          <div class="overlay-intip-team" id="overlay-intip-a">
+            <h3 style="color: #FDE047; font-weight: 900; font-size: 1.1rem;">💡 Intip Jarimatika (Tim A)</h3>
+            <div class="quota-flex" style="margin: 4px 0;">
+              <button class="btn-quota active" id="tab-intip-a-tut3" onclick="setTeamLocalTut('A','tut3')">x3</button>
+              <button class="btn-quota" id="tab-intip-a-tut4" onclick="setTeamLocalTut('A','tut4')">x4</button>
+              <button class="btn-quota" id="tab-intip-a-tut68" onclick="setTeamLocalTut('A','tut68')">x6-8</button>
+              <button class="btn-quota" id="tab-intip-a-tut9" onclick="setTeamLocalTut('A','tut9')">x9</button>
+            </div>
+            <div class="hands-box" style="margin: 4px 0;">
+              <div class="hand-card" style="padding: 8px 10px;"><div class="finger-lane" id="fingers-local-a-left" style="height: 140px;"></div></div>
+              <div class="hand-card" style="padding: 8px 10px;"><div class="finger-lane" id="fingers-local-a-right" style="height: 140px;"></div></div>
+            </div>
+            <div id="text-local-a" style="font-size: 0.9rem; text-align: center; color: #FCD34D; font-weight: 800; min-height: 24px;"></div>
+            <button class="btn-top" onclick="closeTeamLocalTut('A')" style="background: #22C55E; border-color: #16A34A; color: white;">Kembali Menghitung ✕</button>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <div>
+              <span id="name-hud-a" style="font-weight: 900; color: #BE123C; font-size: 1.15rem;">Tim Merah</span>
+              <span id="counter-hud-a" style="margin-left: 6px; font-weight: 800; font-size: 0.85rem; color: #64748B;">(1/10)</span>
+            </div>
+            <div>
+              <button class="btn-top" style="padding: 4px 8px; font-size: 0.8rem;" onclick="openTeamLocalTut('A')">💡 Intip</button>
+              <button class="btn-top" style="padding: 4px 8px; font-size: 0.8rem; background: #FEE2E2; border-color: #F87171; color: #991B1B;" onclick="clearCanvasScreen('canvas-team-a')">🧽</button>
+              <span id="score-hud-a" style="margin-left: 6px; font-weight: 900; color: #16A34A;">0</span>
+            </div>
+          </div>
+
+          <div class="pure-question-card" id="pure-q-team-a" style="font-size: 1.05rem; min-height: 75px; padding: 10px;">Soal Tim A</div>
+
+          <div style="display: flex; gap: 8px; flex: 1; margin-top: 8px;">
+            <div style="flex: 1; display: flex; flex-direction: column;">
+              <canvas id="canvas-team-a" class="scratch-cvs"></canvas>
+            </div>
+            <div class="numpad-box" style="flex: 1; padding: 6px;">
+              <div class="screen-input-ans" id="input-display-team-a" style="height: 42px; font-size: 1.5rem;">-</div>
+              <div class="key-grid" style="gap: 4px;">
+                <button class="key-btn" onclick="pressTeamNumpad('A','1')">1</button>
+                <button class="key-btn" onclick="pressTeamNumpad('A','2')">2</button>
+                <button class="key-btn" onclick="pressTeamNumpad('A','3')">3</button>
+                <button class="key-btn" onclick="pressTeamNumpad('A','4')">4</button>
+                <button class="key-btn" onclick="pressTeamNumpad('A','5')">5</button>
+                <button class="key-btn" onclick="pressTeamNumpad('A','6')">6</button>
+                <button class="key-btn" onclick="pressTeamNumpad('A','7')">7</button>
+                <button class="key-btn" onclick="pressTeamNumpad('A','8')">8</button>
+                <button class="key-btn" onclick="pressTeamNumpad('A','9')">9</button>
+                <button class="key-btn key-del" onclick="pressTeamNumpad('A','DEL')">⌫</button>
+                <button class="key-btn" onclick="pressTeamNumpad('A','0')">0</button>
+                <button class="key-btn key-send" onclick="pressTeamNumpad('A','OK')">⏎</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SISI TIM B -->
+        <div class="team-col blue" id="col-team-b">
+          <!-- OVERLAY INTIP TIM B (LEGA, TITIK KE-4 TERLIHAT JELAS) -->
+          <div class="overlay-intip-team" id="overlay-intip-b">
+            <h3 style="color: #FDE047; font-weight: 900; font-size: 1.1rem;">💡 Intip Jarimatika (Tim B)</h3>
+            <div class="quota-flex" style="margin: 4px 0;">
+              <button class="btn-quota active" id="tab-intip-b-tut3" onclick="setTeamLocalTut('B','tut3')">x3</button>
+              <button class="btn-quota" id="tab-intip-b-tut4" onclick="setTeamLocalTut('B','tut4')">x4</button>
+              <button class="btn-quota" id="tab-intip-b-tut68" onclick="setTeamLocalTut('B','tut68')">x6-8</button>
+              <button class="btn-quota" id="tab-intip-b-tut9" onclick="setTeamLocalTut('B','tut9')">x9</button>
+            </div>
+            <div class="hands-box" style="margin: 4px 0;">
+              <div class="hand-card" style="padding: 8px 10px;"><div class="finger-lane" id="fingers-local-b-left" style="height: 140px;"></div></div>
+              <div class="hand-card" style="padding: 8px 10px;"><div class="finger-lane" id="fingers-local-b-right" style="height: 140px;"></div></div>
+            </div>
+            <div id="text-local-b" style="font-size: 0.9rem; text-align: center; color: #FCD34D; font-weight: 800; min-height: 24px;"></div>
+            <button class="btn-top" onclick="closeTeamLocalTut('B')" style="background: #22C55E; border-color: #16A34A; color: white;">Kembali Menghitung ✕</button>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <div>
+              <span id="name-hud-b" style="font-weight: 900; color: #0369A1; font-size: 1.15rem;">Tim Biru</span>
+              <span id="counter-hud-b" style="margin-left: 6px; font-weight: 800; font-size: 0.85rem; color: #64748B;">(1/10)</span>
+            </div>
+            <div>
+              <button class="btn-top" style="padding: 4px 8px; font-size: 0.8rem;" onclick="openTeamLocalTut('B')">💡 Intip</button>
+              <button class="btn-top" style="padding: 4px 8px; font-size: 0.8rem; background: #FEE2E2; border-color: #F87171; color: #991B1B;" onclick="clearCanvasScreen('canvas-team-b')">🧽</button>
+              <span id="score-hud-b" style="margin-left: 6px; font-weight: 900; color: #16A34A;">0</span>
+            </div>
+          </div>
+
+          <div class="pure-question-card" id="pure-q-team-b" style="font-size: 1.05rem; min-height: 75px; padding: 10px;">Soal Tim B</div>
+
+          <div style="display: flex; gap: 8px; flex: 1; margin-top: 8px;">
+            <div style="flex: 1; display: flex; flex-direction: column;">
+              <canvas id="canvas-team-b" class="scratch-cvs"></canvas>
+            </div>
+            <div class="numpad-box" style="flex: 1; padding: 6px;">
+              <div class="screen-input-ans" id="input-display-team-b" style="height: 42px; font-size: 1.5rem;">-</div>
+              <div class="key-grid" style="gap: 4px;">
+                <button class="key-btn" onclick="pressTeamNumpad('B','1')">1</button>
+                <button class="key-btn" onclick="pressTeamNumpad('B','2')">2</button>
+                <button class="key-btn" onclick="pressTeamNumpad('B','3')">3</button>
+                <button class="key-btn" onclick="pressTeamNumpad('B','4')">4</button>
+                <button class="key-btn" onclick="pressTeamNumpad('B','5')">5</button>
+                <button class="key-btn" onclick="pressTeamNumpad('B','6')">6</button>
+                <button class="key-btn" onclick="pressTeamNumpad('B','7')">7</button>
+                <button class="key-btn" onclick="pressTeamNumpad('B','8')">8</button>
+                <button class="key-btn" onclick="pressTeamNumpad('B','9')">9</button>
+                <button class="key-btn key-del" onclick="pressTeamNumpad('B','DEL')">⌫</button>
+                <button class="key-btn" onclick="pressTeamNumpad('B','0')">0</button>
+                <button class="key-btn key-send" onclick="pressTeamNumpad('B','OK')">⏎</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. SCREEN SELEBRASI & HASIL -->
+    <div id="screen-result" class="screen">
+      <div class="result-card">
+        <div class="trophy-badge">🏆</div>
+        <h1 id="result-title" style="font-size: 2.1rem; font-weight: 900; color: #0284C7;">Luar Biasa!</h1>
+        <p id="result-subtitle" style="font-size: 1.05rem; color: #475569; font-weight: 700; margin-top: 4px;">Permainan Selesai dengan Sangat Hebat!</p>
+
+        <div class="stats-grid">
+          <div class="stat-pill">
+            <span style="font-size: 0.8rem; color: #64748B; font-weight: 700;">TOTAL SKOR</span>
+            <div id="result-score-val" style="font-size: 2rem; font-weight: 900; color: #16A34A;">0</div>
+          </div>
+          <div class="stat-pill">
+            <span style="font-size: 0.8rem; color: #64748B; font-weight: 700;">BENAR (✅)</span>
+            <div id="result-correct-val" style="font-size: 2rem; font-weight: 900; color: #0284C7;">0</div>
+          </div>
+          <div class="stat-pill">
+            <span style="font-size: 0.8rem; color: #64748B; font-weight: 700;">SALAH (❌)</span>
+            <div id="result-wrong-val" style="font-size: 2rem; font-weight: 900; color: #EF4444;">0</div>
+          </div>
+        </div>
+
+        <div id="result-stars" style="font-size: 1.8rem; margin-bottom: 14px;">⭐⭐⭐</div>
+
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <button class="btn-top" onclick="switchView('screen-home')" style="background: #E2E8F0; border-color: #94A3B8; color: #475569; box-shadow: 0 4px 0 #64748B;">Ke Beranda</button>
+          <button class="btn-top" onclick="showRankingView()" style="background: #FEF08A; border-color: #EAB308; color: #854D0E;">Lihat Papan Juara</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. SCREEN RANKING -->
+    <div id="screen-ranking" class="screen">
+      <h2 style="color: #0284C7; font-weight: 900; margin-bottom: 10px;">🏆 Papan Juara Jarimatika</h2>
+      <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+        <button class="btn-quota active" id="tab-btn-solo" onclick="toggleRankTab('solo')">Rekor Individu</button>
+        <button class="btn-quota" id="tab-btn-team" onclick="toggleRankTab('team')">Rekor Kelompok</button>
+      </div>
+
+      <div id="box-rank-solo" style="width: 100%; display: flex; justify-content: center;">
+        <table style="width: 100%; max-width: 650px; border-collapse: collapse; background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.06);">
+          <thead style="background: #0284C7; color: white;">
+            <tr>
+              <th style="padding: 10px;">No</th>
+              <th style="padding: 10px;">Nama Siswa</th>
+              <th style="padding: 10px;">Kategori</th>
+              <th style="padding: 10px;">Skor</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-rank-solo"></tbody>
+        </table>
+      </div>
+
+      <div id="box-rank-team" style="width: 100%; display: none; justify-content: center;">
+        <table style="width: 100%; max-width: 650px; border-collapse: collapse; background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.06);">
+          <thead style="background: #0284C7; color: white;">
+            <tr>
+              <th style="padding: 10px;">No</th>
+              <th style="padding: 10px;">Nama Tim</th>
+              <th style="padding: 10px;">Status</th>
+              <th style="padding: 10px;">Poin</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-rank-team"></tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 14px;">
+        <button class="btn-top" onclick="switchView('screen-home')" style="background: #E2E8F0; border-color: #94A3B8; color: #475569; box-shadow: 0 4px 0 #64748B;">Kembali</button>
+        <button class="btn-top" onclick="resetRankingHistory()" style="background: #FEE2E2; border-color: #EF4444; color: #B91C1C; box-shadow: 0 4px 0 #B91C1C; margin-left: 10px;">🗑️ Reset Ranking</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================
+       1. BANK SOAL LENGKAP 200 BUTIR (C3 & C4)
+       ========================================================= */
+    const masterBank = [
+      // 100 C3 (1-100)
+      { id: 1, lvl: "C3", q: "Hitunglah 12 x 4 = ...", ans: "48" },
+      { id: 2, lvl: "C3", q: "Hitunglah 14 x 5 = ...", ans: "70" },
+      { id: 3, lvl: "C3", q: "Hitunglah 23 x 3 = ...", ans: "69" },
+      { id: 4, lvl: "C3", q: "Hitunglah 32 x 3 = ...", ans: "96" },
+      { id: 5, lvl: "C3", q: "Hitunglah 24 x 2 = ...", ans: "48" },
+      { id: 6, lvl: "C3", q: "Hitunglah 13 x 6 = ...", ans: "78" },
+      { id: 7, lvl: "C3", q: "Hitunglah 15 x 5 = ...", ans: "75" },
+      { id: 8, lvl: "C3", q: "Hitunglah 16 x 4 = ...", ans: "64" },
+      { id: 9, lvl: "C3", q: "Hitunglah 21 x 4 = ...", ans: "84" },
+      { id: 10, lvl: "C3", q: "Hitunglah 25 x 3 = ...", ans: "75" },
+      { id: 11, lvl: "C3", q: "Hitunglah 11 x 8 = ...", ans: "88" },
+      { id: 12, lvl: "C3", q: "Hitunglah 30 x 3 = ...", ans: "90" },
+      { id: 13, lvl: "C3", q: "Hitunglah 18 x 4 = ...", ans: "72" },
+      { id: 14, lvl: "C3", q: "Hitunglah 12 x 7 = ...", ans: "84" },
+      { id: 15, lvl: "C3", q: "Hitunglah 14 x 6 = ...", ans: "84" },
+      { id: 16, lvl: "C3", q: "Hitunglah 22 x 4 = ...", ans: "88" },
+      { id: 17, lvl: "C3", q: "Hitunglah 15 x 6 = ...", ans: "90" },
+      { id: 18, lvl: "C3", q: "Hitunglah 31 x 3 = ...", ans: "93" },
+      { id: 19, lvl: "C3", q: "Hitunglah 13 x 7 = ...", ans: "91" },
+      { id: 20, lvl: "C3", q: "Hitunglah 45 x 2 = ...", ans: "90" },
+      { id: 21, lvl: "C3", q: "Hitunglah 37 x 2 = ...", ans: "74" },
+      { id: 22, lvl: "C3", q: "Hitunglah 52 x 5 = ...", ans: "260" },
+      { id: 23, lvl: "C3", q: "Hitunglah 48 x 7 = ...", ans: "336" },
+      { id: 24, lvl: "C3", q: "Hitunglah 42 x 2 = ...", ans: "84" },
+      { id: 25, lvl: "C3", q: "Hitunglah 27 x 3 = ...", ans: "81" },
+      { id: 26, lvl: "C3", q: "Hitunglah 36 x 2 = ...", ans: "72" },
+      { id: 27, lvl: "C3", q: "Hitunglah 48 x 2 = ...", ans: "96" },
+      { id: 28, lvl: "C3", q: "Hitunglah 12 x 8 = ...", ans: "96" },
+      { id: 29, lvl: "C3", q: "Hitunglah 16 x 5 = ...", ans: "80" },
+      { id: 30, lvl: "C3", q: "Hitunglah 17 x 4 = ...", ans: "68" },
+      { id: 31, lvl: "C3", q: "Hitunglah 19 x 3 = ...", ans: "57" },
+      { id: 32, lvl: "C3", q: "Hitunglah 26 x 2 = ...", ans: "52" },
+      { id: 33, lvl: "C3", q: "Hitunglah 28 x 3 = ...", ans: "84" },
+      { id: 34, lvl: "C3", q: "Hitunglah 33 x 3 = ...", ans: "99" },
+      { id: 35, lvl: "C3", q: "Hitunglah 34 x 2 = ...", ans: "68" },
+      { id: 36, lvl: "C3", q: "Hitunglah 35 x 2 = ...", ans: "70" },
+      { id: 37, lvl: "C3", q: "Hitunglah 41 x 2 = ...", ans: "82" },
+      { id: 38, lvl: "C3", q: "Hitunglah 43 x 2 = ...", ans: "86" },
+      { id: 39, lvl: "C3", q: "Hitunglah 44 x 2 = ...", ans: "88" },
+      { id: 40, lvl: "C3", q: "Hitunglah 13 x 5 = ...", ans: "65" },
+      { id: 41, lvl: "C3", q: "Hitunglah 14 x 4 = ...", ans: "56" },
+      { id: 42, lvl: "C3", q: "Hitunglah 15 x 3 = ...", ans: "45" },
+      { id: 43, lvl: "C3", q: "Hitunglah 16 x 3 = ...", ans: "48" },
+      { id: 44, lvl: "C3", q: "Hitunglah 17 x 3 = ...", ans: "51" },
+      { id: 45, lvl: "C3", q: "Hitunglah 18 x 3 = ...", ans: "54" },
+      { id: 46, lvl: "C3", q: "Hitunglah 19 x 4 = ...", ans: "76" },
+      { id: 47, lvl: "C3", q: "Hitunglah 21 x 3 = ...", ans: "63" },
+      { id: 48, lvl: "C3", q: "Hitunglah 22 x 3 = ...", ans: "66" },
+      { id: 49, lvl: "C3", q: "Hitunglah 23 x 4 = ...", ans: "92" },
+      { id: 50, lvl: "C3", q: "Hitunglah 24 x 3 = ...", ans: "72" },
+      { id: 51, lvl: "C3", q: "Hitunglah 25 x 2 = ...", ans: "50" },
+      { id: 52, lvl: "C3", q: "Hitunglah 26 x 3 = ...", ans: "78" },
+      { id: 53, lvl: "C3", q: "Hitunglah 27 x 2 = ...", ans: "54" },
+      { id: 54, lvl: "C3", q: "Hitunglah 28 x 2 = ...", ans: "56" },
+      { id: 55, lvl: "C3", q: "Hitunglah 29 x 2 = ...", ans: "58" },
+      { id: 56, lvl: "C3", q: "Hitunglah 29 x 3 = ...", ans: "87" },
+      { id: 57, lvl: "C3", q: "Hitunglah 31 x 2 = ...", ans: "62" },
+      { id: 58, lvl: "C3", q: "Hitunglah 32 x 2 = ...", ans: "64" },
+      { id: 59, lvl: "C3", q: "Hitunglah 33 x 2 = ...", ans: "66" },
+      { id: 60, lvl: "C3", q: "Hitunglah 35 x 3 = ...", ans: "105" },
+      { id: 61, lvl: "C3", q: "Hitunglah 36 x 3 = ...", ans: "108" },
+      { id: 62, lvl: "C3", q: "Hitunglah 38 x 2 = ...", ans: "76" },
+      { id: 63, lvl: "C3", q: "Hitunglah 39 x 2 = ...", ans: "78" },
+      { id: 64, lvl: "C3", q: "Hitunglah 40 x 3 = ...", ans: "120" },
+      { id: 65, lvl: "C3", q: "Hitunglah 41 x 3 = ...", ans: "123" },
+      { id: 66, lvl: "C3", q: "Hitunglah 42 x 3 = ...", ans: "126" },
+      { id: 67, lvl: "C3", q: "Hitunglah 43 x 3 = ...", ans: "129" },
+      { id: 68, lvl: "C3", q: "Hitunglah 44 x 3 = ...", ans: "132" },
+      { id: 69, lvl: "C3", q: "Hitunglah 46 x 2 = ...", ans: "92" },
+      { id: 70, lvl: "C3", q: "Hitunglah 47 x 2 = ...", ans: "94" },
+      { id: 71, lvl: "C3", q: "Hitunglah 48 x 3 = ...", ans: "144" },
+      { id: 72, lvl: "C3", q: "Hitunglah 49 x 2 = ...", ans: "98" },
+      { id: 73, lvl: "C3", q: "Hitunglah 50 x 3 = ...", ans: "150" },
+      { id: 74, lvl: "C3", q: "Hitunglah 51 x 2 = ...", ans: "102" },
+      { id: 75, lvl: "C3", q: "Hitunglah 52 x 2 = ...", ans: "104" },
+      { id: 76, lvl: "C3", q: "Hitunglah 53 x 2 = ...", ans: "106" },
+      { id: 77, lvl: "C3", q: "Hitunglah 54 x 2 = ...", ans: "108" },
+      { id: 78, lvl: "C3", q: "Hitunglah 55 x 2 = ...", ans: "110" },
+      { id: 79, lvl: "C3", q: "Hitunglah 11 x 7 = ...", ans: "77" },
+      { id: 80, lvl: "C3", q: "Hitunglah 11 x 9 = ...", ans: "99" },
+      { id: 81, lvl: "C3", q: "Hitunglah 12 x 5 = ...", ans: "60" },
+      { id: 82, lvl: "C3", q: "Hitunglah 12 x 6 = ...", ans: "72" },
+      { id: 83, lvl: "C3", q: "Hitunglah 13 x 4 = ...", ans: "52" },
+      { id: 84, lvl: "C3", q: "Hitunglah 14 x 3 = ...", ans: "42" },
+      { id: 85, lvl: "C3", q: "Hitunglah 15 x 4 = ...", ans: "60" },
+      { id: 86, lvl: "C3", q: "Hitunglah 16 x 6 = ...", ans: "96" },
+      { id: 87, lvl: "C3", q: "Hitunglah 17 x 5 = ...", ans: "85" },
+      { id: 88, lvl: "C3", q: "Hitunglah 18 x 5 = ...", ans: "90" },
+      { id: 89, lvl: "C3", q: "Hitunglah 19 x 2 = ...", ans: "38" },
+      { id: 90, lvl: "C3", q: "Hitunglah 21 x 2 = ...", ans: "42" },
+      { id: 91, lvl: "C3", q: "Hitunglah 22 x 2 = ...", ans: "44" },
+      { id: 92, lvl: "C3", q: "Hitunglah 23 x 2 = ...", ans: "46" },
+      { id: 93, lvl: "C3", q: "Hitunglah 24 x 4 = ...", ans: "96" },
+      { id: 94, lvl: "C3", q: "Hitunglah 25 x 4 = ...", ans: "100" },
+      { id: 95, lvl: "C3", q: "Hitunglah 26 x 4 = ...", ans: "104" },
+      { id: 96, lvl: "C3", q: "Hitunglah 27 x 4 = ...", ans: "108" },
+      { id: 97, lvl: "C3", q: "Hitunglah 28 x 4 = ...", ans: "112" },
+      { id: 98, lvl: "C3", q: "Hitunglah 30 x 4 = ...", ans: "120" },
+      { id: 99, lvl: "C3", q: "Hitunglah 32 x 4 = ...", ans: "128" },
+      { id: 100, lvl: "C3", q: "Hitunglah 34 x 3 = ...", ans: "102" },
+
+      // 100 C4 (101-200)
+      { id: 101, lvl: "C4", q: "Asep memiliki 12 ekor ayam. Setiap ayam menghabiskan 3 mangkok makanan per hari. Berapa total mangkok makanan sehari?", ans: "36" },
+      { id: 102, lvl: "C4", q: "Perpustakaan SD memiliki 2 rak buku. Setiap rak memuat 45 buku. Berapakah jumlah total buku di perpustakaan?", ans: "90" },
+      { id: 103, lvl: "C4", q: "Ibu memasang kancing pada 14 baju seragam. Tiap baju butuh 7 butir kancing. Berapa kancing yang harus dipasang seluruhnya?", ans: "98" },
+      { id: 104, lvl: "C4", q: "Azizah memelihara 21 ekor kucing sehat. Tiap kucing memiliki 4 kaki. Berapakah jumlah seluruh kaki kucing Azizah?", ans: "84" },
+      { id: 105, lvl: "C4", q: "SD Anggrek mengirim murid dari 6 tingkatan kelas. Setiap kelas mengirim 13 siswa. Berapa total siswa yang dikirim?", ans: "78" },
+      { id: 106, lvl: "C4", q: "Paman memelihara 13 ekor bebek. Setiap bebek makan 3 mangkok dedak sehari. Berapa total mangkok dedak yang dibutuhkan?", ans: "39" },
+      { id: 107, lvl: "C4", q: "Lemari perpustakaan memiliki 3 tingkat rak. Setiap tingkat berisi 25 buku ensiklopedia. Berapa jumlah buku di lemari?", ans: "75" },
+      { id: 108, lvl: "C4", q: "Penjahit memasang kancing pada 13 kemeja seragam. Tiap kemeja butuh 6 kancing. Berapa kancing dipasang seluruhnya?", ans: "78" },
+      { id: 109, lvl: "C4", q: "Pak Budi memelihara 22 ekor kambing. Setiap kambing memiliki 4 kaki. Berapakah jumlah seluruh kaki kambing Pak Budi?", ans: "88" },
+      { id: 110, lvl: "C4", q: "SD Melati memiliki 4 rombongan belajar. Tiap rombongan mengirim 16 siswa ke kemah. Berapa total siswa yang ikut kemah?", ans: "64" },
+      { id: 111, lvl: "C4", q: "Toko roti menata donat ke dalam 12 boks. Setiap boks berisi 4 donat manis. Berapa donat seluruhnya?", ans: "48" },
+      { id: 112, lvl: "C4", q: "Koperasi sekolah menyiapkan 14 kotak spidol. Tiap kotak berisi 5 spidol. Berapa jumlah spidol seluruhnya?", ans: "70" },
+      { id: 113, lvl: "C4", q: "Ayah membeli 15 kantong bibit cabai. Tiap kantong berisi 6 bibit tanaman. Berapa bibit cabai milik ayah seluruhnya?", ans: "90" },
+      { id: 114, lvl: "C4", q: "Paman memanen 18 keranjang jeruk manis. Setiap keranjang memuat 4 buah jeruk. Berapa total jeruk paman?", ans: "72" },
+      { id: 115, lvl: "C4", q: "Di aula tersusun 23 baris kursi penonton. Tiap baris berisi 3 buah kursi. Berapakah daya tampung kursi aula?", ans: "69" },
+      { id: 116, lvl: "C4", q: "Di ruang rapat terdapat 32 baris meja. Masing-masing baris memiliki 3 kursi. Berapa seluruh kursi di ruang rapat?", ans: "96" },
+      { id: 117, lvl: "C4", q: "Bu Guru membawa 16 kotak pensil warna. Tiap kotak berisi 4 batang pensil. Berapa seluruh pensil warna tersebut?", ans: "64" },
+      { id: 118, lvl: "C4", q: "Kakak membeli 24 bungkus penghapus. Setiap bungkus berisi 2 buah penghapus. Berapa banyak penghapus seluruhnya?", ans: "48" },
+      { id: 119, lvl: "C4", q: "Di etalase tersusun 14 toples kue kering. Setiap toples memuat 6 buah kue nastar. Berapa banyak kue nastar semuanya?", ans: "84" },
+      { id: 120, lvl: "C4", q: "Sebuah rak minuman memuat 12 deret botol jus. Setiap deret berisi 7 botol kaca. Berapa botol kaca di rak itu?", ans: "84" },
+      { id: 121, lvl: "C4", q: "Doni menabung Rp3.000 per hari selama 15 hari. Berapa total tabungan Doni dalam ribuan rupiah? (15 x 3)", ans: "45" },
+      { id: 122, lvl: "C4", q: "Di parkiran terdapat 24 sepeda motor roda dua. Berapakah jumlah seluruh roda sepeda motor tersebut?", ans: "48" },
+      { id: 123, lvl: "C4", q: "Pak Pos menaruh surat ke dalam 13 kotak pengiriman. Tiap kotak berisi 5 amplop. Berapa jumlah seluruh amplop surat?", ans: "65" },
+      { id: 124, lvl: "C4", q: "Petani mengikat 12 ikat buah rambutan. Masing-masing ikat memuat 8 rambutan. Berapa total rambutan tersebut?", ans: "96" },
+      { id: 125, lvl: "C4", q: "Ibu menyusun 15 piring kue lemper. Setiap piring berisi 5 kue lemper manis. Berapa kue lemper yang disiapkan?", ans: "75" },
+      { id: 126, lvl: "C4", q: "Di ruang komputer ada 11 meja siswa. Tiap meja dilengkapi 4 layar monitor. Berapa total layar monitor di ruangan?", ans: "44" },
+      { id: 127, lvl: "C4", q: "Pedagang membungkus buah ke dalam 16 kantong plastik. Tiap kantong memuat 5 butir apel. Berapa butir apel semuanya?", ans: "80" },
+      { id: 128, lvl: "C4", q: "Tukang mebel membuat 17 meja belajar. Setiap meja membutuhkan 4 paku baja. Berapa paku baja yang diperlukan?", ans: "68" },
+      { id: 129, lvl: "C4", q: "Rina menata 13 vas bunga mawar. Setiap vas memuat 7 tangkai bunga mawar. Berapa tangkai bunga mawar semuanya?", ans: "91" },
+      { id: 130, lvl: "C4", q: "Toko buku menjual 25 paket buku gambar. Tiap paket memuat 3 buah buku. Berapa total buku gambar yang dijual?", ans: "75" },
+      { id: 131, lvl: "C4", q: "Peternak menata telur ke dalam 14 baki karton. Tiap baki berisi 6 butir telur. Berapa telur ayam yang ditata?", ans: "84" },
+      { id: 132, lvl: "C4", q: "Sebuah mobil mini memiliki 12 baris kursi penumpang. Tiap baris memuat 4 penumpang. Berapa kapasitas mobil mini?", ans: "48" },
+      { id: 133, lvl: "C4", q: "Sebanyak 15 siswa melipat origami. Setiap siswa memakai 4 lembar kertas warna. Berapa lembar kertas warna terpakai?", ans: "60" },
+      { id: 134, lvl: "C4", q: "Panitia membagikan 18 paket bingkisan lomba. Setiap paket berisi 5 snack sehat. Berapa total snack sehat tersebut?", ans: "90" },
+      { id: 135, lvl: "C4", q: "Di kebun sekolah ada 21 bedeng tanaman tomat. Tiap bedeng berisi 4 bibit tomat. Berapa bibit tomat seluruhnya?", ans: "84" },
+      { id: 136, lvl: "C4", q: "Kurir mengirim 23 paket tiap hari selama 3 hari berturut-turut. Berapa total paket yang dikirim kurir?", ans: "69" },
+      { id: 137, lvl: "C4", q: "Toko oleh-oleh mengemas 22 kantong gantungan kunci. Tiap kantong berisi 4 buah. Berapa jumlah gantungan kunci?", ans: "88" },
+      { id: 138, lvl: "C4", q: "Petugas menyiapkan 14 kotak plastik sampah. Setiap kotak memuat 4 rol plastik. Berapa rol plastik yang tersedia?", ans: "56" },
+      { id: 139, lvl: "C4", q: "Ibu membeli 17 kotak susu kecil. Setiap kotak berisi 3 botol susu. Berapakah banyak botol susu yang dibeli Ibu?", ans: "51" },
+      { id: 140, lvl: "C4", q: "Di toko olahraga ada 16 rak bola tenis meja. Tiap rak memuat 6 butir bola. Berapa bola tenis meja di toko?", ans: "96" },
+      { id: 141, lvl: "C4", q: "Paman punya 12 pohon mangga. Setiap pohon menghasilkan 6 buah matang siap petik. Berapa mangga yang siap dipetik?", ans: "72" },
+      { id: 142, lvl: "C4", q: "Regu pramuka mendirikan 11 tenda. Tiap tenda dihuni oleh 8 anak pramuka. Berapa anak pramuka yang berkemah?", ans: "88" },
+      { id: 143, lvl: "C4", q: "Klinik hewan merawat 14 anjing. Setiap anjing butuh 5 mangkok pakan sehari. Berapa mangkok pakan disiapkan sehari?", ans: "70" },
+      { id: 144, lvl: "C4", q: "Penjual jus menyiapkan 15 mangkuk semangka. Tiap mangkuk berisi 6 potong semangka. Berapa potong semangka semuanya?", ans: "90" },
+      { id: 145, lvl: "C4", q: "Perpustakaan mengikat 19 bundel majalah. Setiap bundel berisi 4 majalah anak. Berapa majalah anak seluruhnya?", ans: "76" },
+      { id: 146, lvl: "C4", q: "Kakek menanam 24 deret jagung manis. Tiap deret berisi 3 pohon jagung subur. Berapa batang jagung di kebun kakek?", ans: "72" },
+      { id: 147, lvl: "C4", q: "Di parkiran ada 26 sepeda kayuh roda dua. Berapakah jumlah seluruh roda sepeda kayuh tersebut?", ans: "52" },
+      { id: 148, lvl: "C4", q: "Koki memanggang kue sus di 13 loyang oven. Tiap loyang memuat 6 kue sus. Berapakah kue sus yang dipanggang koki?", ans: "78" },
+      { id: 149, lvl: "C4", q: "Pak RT membagikan 25 dus air mineral botol besar. Tiap dus berisi 4 botol. Berapa botol air mineral dibagikan?", ans: "100" },
+      { id: 150, lvl: "C4", q: "Di rak mainan ada 18 set balok susun. Tiap set memuat 5 balok kayu warna-warni. Berapa balok kayu seluruhnya?", ans: "90" },
+      { id: 151, lvl: "C4", q: "Andi membaca 14 lembar buku per hari selama 6 hari berturut-turut. Berapa lembar buku telah dibaca Andi?", ans: "84" },
+      { id: 152, lvl: "C4", q: "Toko baju memajang celana pada 12 gantungan. Tiap gantungan memuat 5 potong celana. Berapa potong celana dipajang?", ans: "60" },
+      { id: 153, lvl: "C4", q: "Di padang rumput ada 21 ekor rusa tutul. Tiap rusa memiliki 4 kaki. Berapakah jumlah seluruh kaki rusa tersebut?", ans: "84" },
+      { id: 154, lvl: "C4", q: "Ibu memesan 15 piring sate madura. Masing-masing piring berisi 6 tusuk sate. Berapa tusuk sate yang dipesan ibu?", ans: "90" },
+      { id: 155, lvl: "C4", q: "Pengrajin membuat 23 keranjang buah. Setiap keranjang butuh 4 bilah bambu penguat. Berapa bilah bambu terpakai?", ans: "92" },
+      { id: 156, lvl: "C4", q: "Koperasi tani menjual 17 karung benih padi. Berat tiap karung adalah 5 kilogram. Berapa total kilogram benih padi?", ans: "85" },
+      { id: 157, lvl: "C4", q: "Di ruang pertunjukan ada 31 baris sofa VIP. Setiap baris diisi 3 kursi sofa empuk. Berapa kapasitas sofa VIP?", ans: "93" },
+      { id: 158, lvl: "C4", q: "Toko keramik mengemas 16 dus ubin granit. Tiap dus berisi 5 keping ubin. Berapa banyak keping ubin granit tersebut?", ans: "80" },
+      { id: 159, lvl: "C4", q: "Paman punya 22 sangkar burung kenari. Setiap sangkar memiliki 2 tempat minum. Berapa jumlah tempat minum burung?", ans: "44" },
+      { id: 160, lvl: "C4", q: "Petugas UKS menata 13 kotak obat P3K. Setiap kotak dilengkapi 7 rol kain perban. Berapa rol kain perban tersedia?", ans: "91" },
+      { id: 161, lvl: "C4", q: "Di gedung parkir tersusun 25 baris mobil. Tiap baris memuat 3 mobil sedan. Berapakah banyak mobil sedan di gedung?", ans: "75" },
+      { id: 162, lvl: "C4", q: "Di toko pesta tersedia 14 paket lilin ulang tahun. Tiap paket berisi 4 batang lilin. Berapa lilin emas seluruhnya?", ans: "56" },
+      { id: 163, lvl: "C4", q: "Pelukis menyiapkan 18 palet cat minyak. Pada tiap palet dipasang 4 tabung cat warna. Berapa tabung cat disiapkan?", ans: "72" },
+      { id: 164, lvl: "C4", q: "Di lab biologi ada 15 kotak mikroskop. Masing-masing kotak memuat 5 lembar kaca preparat. Berapa kaca preparat di lab?", ans: "75" },
+      { id: 165, lvl: "C4", q: "Ibu membagi manik-manik mutiara ke 12 wadah. Tiap wadah memuat 8 butir mutiara. Berapa mutiara semuanya?", ans: "96" },
+      { id: 166, lvl: "C4", q: "Di lapangan panahan ada 19 papan sasaran. Tiap pemanah menancapkan 3 anak panah. Berapa panah tertancap di papan?", ans: "57" },
+      { id: 167, lvl: "C4", q: "Penjual martabak butuh 14 butir telur bebek per loyang adonan. Berapa telur bebek diperlukan untuk 5 loyang?", ans: "70" },
+      { id: 168, lvl: "C4", q: "Siswa kelas 3 membuat 27 mading dinding. Tiap mading ditempeli 2 poster edukatif. Berapa poster terpasang di dinding?", ans: "54" },
+      { id: 169, lvl: "C4", q: "Bu Guru menyiapkan 16 paket kuas lukis. Setiap paket terdiri atas 3 kuas halus. Berapa kuas halus yang disiapkan?", ans: "48" },
+      { id: 170, lvl: "C4", q: "Kapal wisata memiliki 23 bilik kamar. Masing-masing kamar memuat 3 tempat tidur tingkat. Berapa kapasitas kasur kapal?", ans: "69" },
+      { id: 171, lvl: "C4", q: "Doni membeli 12 kotak kue bolu pandan. Tiap kotak kue berisi 7 potong bolu wangi. Berapa potong bolu dibeli Doni?", ans: "84" },
+      { id: 172, lvl: "C4", q: "Di taman burung ada 13 kandang pelikan putih. Setiap kandang dihuni 6 pelikan putih. Berapa jumlah burung pelikan?", ans: "78" },
+      { id: 173, lvl: "C4", q: "Di toko mainan ada 24 dus mobil mini. Setiap dus berisi 4 mainan mobil sport. Berapa mainan mobil sport di toko?", ans: "96" },
+      { id: 174, lvl: "C4", q: "Paman menanam 21 baris pohon cabai rawit. Tiap baris terdapat 4 batang bibit cabai. Berapa batang cabai ditanam?", ans: "84" },
+      { id: 175, lvl: "C4", q: "Panitia menyiapkan 18 kardus kaos jalan sehat. Tiap kardus berisi 5 potong kaos sablon. Berapa kaos disiapkan?", ans: "90" },
+      { id: 176, lvl: "C4", q: "Tukang jahit menjahit 15 jaket pramuka. Setiap jaket dipasangi 4 kancing saku. Berapa kancing saku dipasang?", ans: "60" },
+      { id: 177, lvl: "C4", q: "Di aula dipasang 11 lampu kristal gantung. Tiap lampu memiliki 9 bohlam LED hemat daya. Berapa total bohlam LED?", ans: "99" },
+      { id: 178, lvl: "C4", q: "Di kantin ada 14 nampan kue pastel isi sayur. Setiap nampan memuat 6 buah kue pastel. Berapa jumlah kue pastel?", ans: "84" },
+      { id: 179, lvl: "C4", q: "Kakek membeli kawat pagar sepanjang 28 meter sebanyak 3 gulung penuh. Berapa total panjang meter kawat pagar kakek?", ans: "84" },
+      { id: 180, lvl: "C4", q: "Di ruang musik ada 16 kotak marakas kayu. Masing-masing kotak berisi 4 instrumen marakas. Berapa alat musik marakas?", ans: "64" },
+      { id: 181, lvl: "C4", q: "Toko roti membuat 17 boks roti tawar gandum. Tiap boks berisi 5 lembar roti tebal. Berapa lembar roti diproduksi?", ans: "85" },
+      { id: 182, lvl: "C4", q: "Paman mengangkut 25 karung beras mini. Tiap karung berbobot 4 kilogram beras. Berapa total kilogram beras paman?", ans: "100" },
+      { id: 183, lvl: "C4", q: "Di akuarium sekolah ada 12 kura-kura air tawar. Setiap kura-kura memiliki 4 kaki bercakar. Berapa kaki kura-kura?", ans: "48" },
+      { id: 184, lvl: "C4", q: "Ibu mengisi dodol ke 13 keranjang besek bambu. Tiap keranjang memuat 7 bungkus dodol. Berapa dodol dikemas seluruhnya?", ans: "91" },
+      { id: 185, lvl: "C4", q: "Di taman bunga ada 22 petak melati putih wangi. Tiap petak ditanami 4 batang melati. Berapa batang melati di taman?", ans: "88" },
+      { id: 186, lvl: "C4", q: "Petugas kebersihan menata 15 ember pel di gudang. Tiap ember berisi 4 botol pembersih lantai. Berapa botol pembersih?", ans: "60" },
+      { id: 187, lvl: "C4", q: "Di toko musik ada 14 set senar gitar akustik. Setiap set berisi 6 dawai kawat senar. Berapa dawai kawat di toko?", ans: "84" },
+      { id: 188, lvl: "C4", q: "Penitipan hewan merawat 18 kucing persia. Setiap kucing menghabiskan 4 snack sehari. Berapa bungkus snack dibutuhkan?", ans: "72" },
+      { id: 189, lvl: "C4", q: "Toko gadget memajang 21 tablet edukasi anak. Setiap tablet diberi 3 buah pena stylus. Berapa stylus dipajang?", ans: "63" },
+      { id: 190, lvl: "C4", q: "Di sanggar tari ada 16 selendang tari sutra. Setiap selendang dipasang 4 lonceng kecil. Berapa lonceng terpasang?", ans: "64" },
+      { id: 191, lvl: "C4", q: "Paman menanam semangka madu dalam 30 deretan bedeng. Tiap deret tumbuh 3 tunas bibit. Berapa tunas bibit semangka?", ans: "90" },
+      { id: 192, lvl: "C4", q: "Kakak menata 12 toples kaca jepit rambut. Tiap toples memuat 8 jepit rambut warna pastel. Berapa jepit rambut kakak?", ans: "96" },
+      { id: 193, lvl: "C4", q: "Di toko perabot ada 23 set sendok makan. Setiap set dikemas dalam wadah isi 4 sendok. Berapa sendok makan di toko?", ans: "92" },
+      { id: 194, lvl: "C4", q: "Ibu membeli 15 ikat kangkung segar. Harga tiap ikat kangkung adalah 5 koin pasar. Berapa koin harus dibayar ibu?", ans: "75" },
+      { id: 195, lvl: "C4", q: "Di ruang kelas terdapat 31 unit meja ganda. Setiap meja ditempati oleh 3 siswa pintar. Berapa daya tampung siswa?", ans: "93" },
+      { id: 196, lvl: "C4", q: "Tukang kayu merakit 14 pigura foto kayu jati. Tiap pigura butuh 5 sekrup baja anti karat. Berapa sekrup digunakan?", ans: "70" },
+      { id: 197, lvl: "C4", q: "Toko cenderamata mengemas 26 paket gantungan wayang. Tiap paket memuat 3 gantungan. Berapa gantungan wayang semuanya?", ans: "78" },
+      { id: 198, lvl: "C4", q: "Kebun mawar memanen 17 keranjang mawar semerbak. Masing-masing keranjang berisi 5 tangkai bunga. Berapa tangkai mawar dipanen?", ans: "85" },
+      { id: 199, lvl: "C4", q: "Di perpustakaan ada 24 baris buku dongeng rakyat. Setiap baris memuat 3 buku bergambar. Berapa buku dongeng rakyat?", ans: "72" },
+      { id: 200, lvl: "C4", q: "Guru olahraga membawa 13 kantong jaring bola voli. Tiap kantong berisi 6 bola voli standar. Berapa bola voli sekolah?", ans: "78" }
+    ];
+
+    /* =========================================================
+       2. TATA SUARA
+       ========================================================= */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function emitBeep(freq, type, dur, delay = 0, gainLevel = 0.2) {
+      setTimeout(() => {
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          gain.gain.setValueAtTime(gainLevel, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + dur);
+        } catch(e) {}
+      }, delay);
+    }
+
+    const sound = {
+      pop: () => { emitBeep(520, 'sine', 0.08, 0, 0.25); emitBeep(720, 'sine', 0.08, 30, 0.2); },
+      numKey: (num) => { emitBeep(320 + (parseInt(num) || 0) * 45, 'triangle', 0.09, 0, 0.25); },
+      correct: () => {
+        emitBeep(523, 'triangle', 0.18, 0, 0.35);
+        emitBeep(659, 'triangle', 0.2, 70, 0.35);
+        emitBeep(784, 'triangle', 0.25, 140, 0.4);
+        emitBeep(1046, 'triangle', 0.35, 210, 0.45);
+      },
+      wrong: () => {
+        emitBeep(260, 'sawtooth', 0.18, 0, 0.25);
+        emitBeep(190, 'sawtooth', 0.28, 90, 0.25);
+      },
+      victory: () => {
+        [523, 659, 784, 659, 784, 1046].forEach((f, i) => emitBeep(f, 'square', 0.25, i * 120, 0.35));
+      }
+    };
+
+    /* =========================================================
+       3. KONFETI SELEBRASI
+       ========================================================= */
+    const confCanvas = document.getElementById('confetti-canvas');
+    const confCtx = confCanvas.getContext('2d');
+    let confettiList = [];
+    let isConfettiRunning = false;
+
+    function resizeConf() {
+      confCanvas.width = window.innerWidth;
+      confCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeConf);
+    resizeConf();
+
+    function triggerConfetti(durMs = 3500) {
+      confettiList = [];
+      const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#EC4899', '#8B5CF6'];
+      for (let i = 0; i < 150; i++) {
+        confettiList.push({
+          x: Math.random() * confCanvas.width,
+          y: Math.random() * -confCanvas.height,
+          w: Math.random() * 12 + 6,
+          h: Math.random() * 8 + 4,
+          col: colors[Math.floor(Math.random() * colors.length)],
+          vx: Math.random() * 4 - 2,
+          vy: Math.random() * 5 + 4,
+          rot: Math.random() * 360,
+          vrot: Math.random() * 8 - 4
+        });
+      }
+      isConfettiRunning = true;
+      setTimeout(() => {
+        isConfettiRunning = false;
+        confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
+      }, durMs);
+    }
+
+    function renderConfettiLoop() {
+      if (isConfettiRunning) {
+        confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
+        confettiList.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.vrot;
+          confCtx.save();
+          confCtx.translate(p.x, p.y);
+          confCtx.rotate(p.rot * Math.PI / 180);
+          confCtx.fillStyle = p.col;
+          confCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          confCtx.restore();
+          if (p.y > confCanvas.height) p.y = -20;
+        });
+      }
+      requestAnimationFrame(renderConfettiLoop);
+    }
+    renderConfettiLoop();
+
+    /* =========================================================
+       4. NAVIGASI
+       ========================================================= */
+    function switchView(id) {
+      sound.pop();
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const sc = document.getElementById(id);
+      if (sc) sc.classList.add('active');
+    }
+
+    /* =========================================================
+       5. MODE TUTORIAL
+       ========================================================= */
+    let currentTutMateri = 'tut3';
+    let fullTutorialFingers = new Array(10).fill(false);
+    const leftH = [85, 135, 165, 145, 110];
+    const rightH = [110, 145, 165, 135, 85];
+
+    function openTutorialFullscreen(type) {
+      sound.pop();
+      switchView('screen-tutorial');
+      switchTutorialMateri(type);
+    }
+
+    function switchTutorialMateri(type) {
+      sound.pop();
+      currentTutMateri = type;
+      ['tut3', 'tut4', 'tut68', 'tut9'].forEach(t => {
+        const b = document.getElementById('tab-pill-' + t);
+        if (b) b.classList.remove('active');
+      });
+      const act = document.getElementById('tab-pill-' + type);
+      if (act) act.classList.add('active');
+
+      fullTutorialFingers.fill(false);
+      renderTutorialFingersDOM('tut-full-left', 'tut-full-right', fullTutorialFingers, onToggleFullFinger, 1);
+      updateTutorialCalcOutput('tut-full-calc-text', fullTutorialFingers);
+    }
+
+    function onToggleFullFinger(idx) {
+      sound.pop();
+      fullTutorialFingers[idx] = !fullTutorialFingers[idx];
+      renderTutorialFingersDOM('tut-full-left', 'tut-full-right', fullTutorialFingers, onToggleFullFinger, 1);
+      updateTutorialCalcOutput('tut-full-calc-text', fullTutorialFingers);
+    }
+
+    function renderTutorialFingersDOM(leftId, rightId, fingerStates, onClickHandler, scaleRatio = 1) {
+      const lEl = document.getElementById(leftId);
+      const rEl = document.getElementById(rightId);
+      if (!lEl || !rEl) return;
+      lEl.innerHTML = '';
+      rEl.innerHTML = '';
+
+      for (let i = 0; i < 5; i++) lEl.appendChild(createFingerPillDOM(i, leftH[i] * scaleRatio, true, fingerStates, onClickHandler));
+      for (let i = 5; i < 10; i++) rEl.appendChild(createFingerPillDOM(i, rightH[i - 5] * scaleRatio, false, fingerStates, onClickHandler));
+    }
+
+    function createFingerPillDOM(idx, height, isLeft, states, handler) {
+      const pill = document.createElement('div');
+      const isFolded = states[idx];
+      pill.className = 'finger-item' + (isFolded ? ' folded' : '');
+      pill.style.height = height + 'px';
+      pill.onclick = () => handler(idx);
+
+      let lbl = '';
+      if (currentTutMateri === 'tut68') {
+        const lL = ['6', '7', '8', '9', '10'];
+        const lR = ['10', '9', '8', '7', '6'];
+        lbl = isLeft ? lL[idx] : lR[idx - 5];
+      } else {
+        lbl = (idx + 1).toString();
+      }
+
+      const b = document.createElement('div');
+      b.className = 'finger-badge';
+      b.innerText = lbl;
+      pill.appendChild(b);
+
+      if (!isFolded) {
+        if (currentTutMateri === 'tut3') {
+          for (let d = 0; d < 3; d++) {
+            const dt = document.createElement('div');
+            dt.className = 'joint-dot';
+            pill.appendChild(dt);
+          }
+        } else if (currentTutMateri === 'tut4') {
+          for (let d = 0; d < 4; d++) {
+            const dt = document.createElement('div');
+            dt.className = 'joint-dot';
+            pill.appendChild(dt);
+          }
+        }
+      }
+      return pill;
+    }
+
+    function updateTutorialCalcOutput(containerId, fingerArr) {
+      const out = document.getElementById(containerId);
+      if (!out) return;
+      const standing = fingerArr.filter(f => !f).length;
+
+      if (currentTutMateri === 'tut3') {
+        out.innerHTML = `
+          <div class="calc-row">💡 <strong>Konsep:</strong> Setiap jari berdiri memiliki 3 titik ruas jari.</div>
+          <div class="calc-row">👉 <strong>Jari Berdiri:</strong> &nbsp;<span style="color:#0284C7; font-weight:900;">${standing} jari</span></div>
+          <div class="calc-row">✨ <strong>Perhitungan:</strong> &nbsp;${standing} x 3 = &nbsp;<span style="color:#16A34A; font-size:1.4rem; font-weight:900;">${standing * 3}</span></div>
+        `;
+      } else if (currentTutMateri === 'tut4') {
+        out.innerHTML = `
+          <div class="calc-row">💡 <strong>Konsep:</strong> Setiap jari berdiri memiliki 4 titik ruas jari (termasuk ujung kuku).</div>
+          <div class="calc-row">👉 <strong>Jari Berdiri:</strong> &nbsp;<span style="color:#0284C7; font-weight:900;">${standing} jari</span></div>
+          <div class="calc-row">✨ <strong>Perhitungan:</strong> &nbsp;${standing} x 4 = &nbsp;<span style="color:#16A34A; font-size:1.4rem; font-weight:900;">${standing * 4}</span></div>
+        `;
+      } else if (currentTutMateri === 'tut68') {
+        let stdL = 0, fldL = 0, stdR = 0, fldR = 0;
+        for (let i = 0; i < 5; i++) { if (!fingerArr[i]) stdL++; else fldL++; }
+        for (let i = 5; i < 10; i++) { if (!fingerArr[i]) stdR++; else fldR++; }
+        let puluhan = (stdL + stdR) * 10;
+        let satuan = fldL * fldR;
+        out.innerHTML = `
+          <div class="calc-row">🖐️ <strong>Jari Berdiri (Puluhan):</strong> &nbsp;(${stdL} + ${stdR}) x 10 = <strong>${puluhan}</strong></div>
+          <div class="calc-row">✊ <strong>Jari Dilipat (Satuan):</strong> &nbsp;${fldL} x ${fldR} = <strong>${satuan}</strong></div>
+          <div class="calc-row">✨ <strong>Hasil Akhir:</strong> &nbsp;${puluhan} + ${satuan} = &nbsp;<span style="color:#16A34A; font-size:1.4rem; font-weight:900;">${puluhan + satuan}</span></div>
+        `;
+      } else if (currentTutMateri === 'tut9') {
+        let fIdx = fingerArr.findIndex(f => f === true);
+        if (fIdx === -1) {
+          out.innerHTML = `<div class="calc-row">💡 <strong>Konsep Perkalian 9:</strong> Silakan klik dan lipat 1 jari sebagai angka pengali!</div>`;
+        } else {
+          let mult = fIdx + 1;
+          let tens = fIdx;
+          let units = 9 - fIdx;
+          out.innerHTML = `
+            <div class="calc-row">🔢 <strong>Perkalian:</strong> &nbsp;9 x ${mult} (Jari ke-${mult} dilipat)</div>
+            <div class="calc-row">👉 <strong>Sebelum Lipatan (Puluhan):</strong> &nbsp;${tens} puluh (${tens * 10})</div>
+            <div class="calc-row">👉 <strong>Sesudah Lipatan (Satuan):</strong> &nbsp;${units} satuan (${units})</div>
+            <div class="calc-row">✨ <strong>Hasil Akhir:</strong> &nbsp;<span style="color:#16A34A; font-size:1.4rem; font-weight:900;">${(tens * 10) + units}</span></div>
+          `;
+        }
+      }
+    }
+
+    /* =========================================================
+       6. ANTI-DUPLIKAT & SETUP SOAL
+       ========================================================= */
+    let lastUsedQuestionIds = new Set();
+    let setupGameMode = 'solo';
+    let chosenLevel = 'C3';
+    let chosenQuota = 10;
+
+    function prepareGameSetup(mode) {
+      sound.pop();
+      setupGameMode = mode;
+      switchView('screen-setup');
+      const title = document.getElementById('setup-header-title');
+      const sBox = document.getElementById('box-name-solo');
+      const tBox = document.getElementById('box-name-team');
+
+      if (mode === 'solo') {
+        title.innerText = '👤 Pengaturan Mode Individu';
+        sBox.style.display = 'block';
+        tBox.style.display = 'none';
+      } else {
+        title.innerText = '👥 Pengaturan Mode Kelompok (Split-Screen)';
+        sBox.style.display = 'none';
+        tBox.style.display = 'block';
+      }
+    }
+
+    function setSetupLevel(lvl) {
+      sound.pop();
+      chosenLevel = lvl;
+      document.querySelectorAll('.btn-level').forEach(b => b.classList.remove('active'));
+      if (lvl === 'C3') document.getElementById('btn-lvl-c3').classList.add('active');
+      if (lvl === 'C4') document.getElementById('btn-lvl-c4').classList.add('active');
+      if (lvl === 'MASTER') document.getElementById('btn-lvl-master').classList.add('active');
+    }
+
+    function setSetupQuota(q) {
+      sound.pop();
+      chosenQuota = parseInt(q);
+      document.querySelectorAll('.btn-quota').forEach(b => {
+        const val = parseInt(b.getAttribute('data-quota'));
+        if (val === chosenQuota) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+    }
+
+    function getFreshQuestionSet(lvl, count) {
+      let pool = [];
+      if (lvl === 'C3') {
+        pool = masterBank.filter(q => q.lvl === 'C3');
+      } else if (lvl === 'C4') {
+        pool = masterBank.filter(q => q.lvl === 'C4');
+      } else {
+        pool = [...masterBank];
+      }
+
+      let freshPool = pool.filter(q => !lastUsedQuestionIds.has(q.id));
+      if (freshPool.length < count) {
+        lastUsedQuestionIds.clear();
+        freshPool = [...pool];
+      }
+
+      for (let i = freshPool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [freshPool[i], freshPool[j]] = [freshPool[j], freshPool[i]];
+      }
+
+      const selected = freshPool.slice(0, count);
+      selected.forEach(q => lastUsedQuestionIds.add(q.id));
+      return selected;
+    }
+
+    /* =========================================================
+       7. GAMEPLAY MODE INDIVIDU & MODAL INTIP MANDIRI
+       ========================================================= */
+    let soloPlayerName = 'Siswa Juara';
+    let soloQuestions = [];
+    let soloCurIdx = 0;
+    let soloCorrectCount = 0;
+    let soloWrongCount = 0;
+    let soloAnsBuffer = '';
+    let soloModalFingers = new Array(10).fill(false);
+
+    function beginGameSession() {
+      sound.pop();
+      if (setupGameMode === 'solo') {
+        soloPlayerName = document.getElementById('player-solo-name').value.trim() || 'Siswa Juara';
+        soloQuestions = getFreshQuestionSet(chosenLevel, chosenQuota);
+        soloCurIdx = 0;
+        soloCorrectCount = 0;
+        soloWrongCount = 0;
+        soloAnsBuffer = '';
+
+        document.getElementById('hud-solo-player').innerText = 'Pemain: ' + soloPlayerName;
+        document.getElementById('hud-solo-category').innerText = (chosenLevel === 'C3' ? '⚡ Petualang Cepat' : (chosenLevel === 'C4' ? '🔍 Detektif Cerita' : '👑 Master'));
+        switchView('screen-game-solo');
+        initScratchCanvas('canvas-solo');
+        renderSoloQuestion();
+      } else {
+        startTeamSplitGame();
+      }
+    }
+
+    function renderSoloQuestion() {
+      const q = soloQuestions[soloCurIdx];
+      document.getElementById('box-solo-pure-q').innerText = q.q;
+      document.getElementById('hud-solo-counter').innerText = `Soal ${soloCurIdx + 1} / ${soloQuestions.length}`;
+      document.getElementById('hud-solo-score').innerText = 'Skor: ' + (soloCorrectCount * 10);
+      const pct = (soloCurIdx / soloQuestions.length) * 100;
+      document.getElementById('hud-solo-prog-bar').style.width = pct + '%';
+
+      soloAnsBuffer = '';
+      document.getElementById('display-solo-input').innerText = '-';
+      clearCanvasScreen('canvas-solo');
+    }
+
+    function pressSoloNumpad(key) {
+      if (key === 'OK') {
+        if (!soloAnsBuffer) return;
+        const q = soloQuestions[soloCurIdx];
+        if (soloAnsBuffer.trim() === q.ans.trim()) {
+          sound.correct();
+          soloCorrectCount++;
+        } else {
+          sound.wrong();
+          soloWrongCount++;
+        }
+
+        soloCurIdx++;
+        if (soloCurIdx < soloQuestions.length) {
+          renderSoloQuestion();
+        } else {
+          finishSoloSession();
+        }
+      } else if (key === 'DEL') {
+        sound.pop();
+        soloAnsBuffer = soloAnsBuffer.slice(0, -1);
+        document.getElementById('display-solo-input').innerText = soloAnsBuffer || '-';
+      } else {
+        sound.numKey(key);
+        if (soloAnsBuffer.length < 5) {
+          soloAnsBuffer += key;
+          document.getElementById('display-solo-input').innerText = soloAnsBuffer;
+        }
+      }
+    }
+
+    function finishSoloSession() {
+      sound.victory();
+      triggerConfetti(4500);
+      const totalScore = soloCorrectCount * 10;
+      saveSoloRank(soloPlayerName, totalScore, chosenLevel);
+
+      document.getElementById('result-title').innerText = '🎉 LUAR BIASA!';
+      document.getElementById('result-subtitle').innerText = `Hebat sekali, ${soloPlayerName}! Kamu telah menyelesaikan tantangan!`;
+      document.getElementById('result-score-val').innerText = totalScore;
+      document.getElementById('result-correct-val').innerText = soloCorrectCount;
+      document.getElementById('result-wrong-val').innerText = soloWrongCount;
+
+      let stars = '⭐';
+      if (soloCorrectCount >= chosenQuota * 0.8) stars = '⭐⭐⭐';
+      else if (soloCorrectCount >= chosenQuota * 0.5) stars = '⭐⭐';
+      document.getElementById('result-stars').innerText = stars;
+
+      switchView('screen-result');
+    }
+
+    // JENDELA INTIP POP-UP INDIVIDU (KEMBALI KE SOAL, BUKAN BERANDA)
+    function openSoloModalTutorial() {
+      sound.pop();
+      document.getElementById('modal-intip-solo').classList.add('active');
+      switchSoloModalMateri('tut3');
+    }
+
+    function closeSoloModalTutorial() {
+      sound.pop();
+      document.getElementById('modal-intip-solo').classList.remove('active');
+    }
+
+    function switchSoloModalMateri(type) {
+      sound.pop();
+      currentTutMateri = type;
+      ['tut3', 'tut4', 'tut68', 'tut9'].forEach(t => {
+        const b = document.getElementById('pill-solo-' + t);
+        if (b) b.classList.remove('active');
+      });
+      const act = document.getElementById('pill-solo-' + type);
+      if (act) act.classList.add('active');
+
+      soloModalFingers.fill(false);
+      renderTutorialFingersDOM('solo-modal-left', 'solo-modal-right', soloModalFingers, onToggleSoloModalFinger, 0.9);
+      updateTutorialCalcOutput('solo-modal-calc-text', soloModalFingers);
+    }
+
+    function onToggleSoloModalFinger(idx) {
+      sound.pop();
+      soloModalFingers[idx] = !soloModalFingers[idx];
+      renderTutorialFingersDOM('solo-modal-left', 'solo-modal-right', soloModalFingers, onToggleSoloModalFinger, 0.9);
+      updateTutorialCalcOutput('solo-modal-calc-text', soloModalFingers);
+    }
+
+    /* =========================================================
+       8. GAMEPLAY KELOMPOK
+       ========================================================= */
+    let nameTeamA = 'Tim Merah';
+    let nameTeamB = 'Tim Biru';
+    let teamQA = [];
+    let teamQB = [];
+    let curIdxA = 0;
+    let curIdxB = 0;
+    let correctCountA = 0;
+    let correctCountB = 0;
+    let wrongCountA = 0;
+    let wrongCountB = 0;
+    let bufTeamA = '';
+    let bufTeamB = '';
+
+    function startTeamSplitGame() {
+      nameTeamA = document.getElementById('player-team-a').value.trim() || 'Tim Merah';
+      nameTeamB = document.getElementById('player-team-b').value.trim() || 'Tim Biru';
+
+      teamQA = getFreshQuestionSet(chosenLevel, chosenQuota);
+      teamQB = getFreshQuestionSet(chosenLevel, chosenQuota);
+
+      curIdxA = 0; curIdxB = 0;
+      correctCountA = 0; correctCountB = 0;
+      wrongCountA = 0; wrongCountB = 0;
+      bufTeamA = ''; bufTeamB = '';
+
+      document.getElementById('name-hud-a').innerText = nameTeamA;
+      document.getElementById('name-hud-b').innerText = nameTeamB;
+
+      switchView('screen-game-team');
+      initScratchCanvas('canvas-team-a');
+      initScratchCanvas('canvas-team-b');
+
+      renderTeamQuestionA();
+      renderTeamQuestionB();
+    }
+
+    function renderTeamQuestionA() {
+      if (curIdxA < teamQA.length) {
+        document.getElementById('pure-q-team-a').innerText = teamQA[curIdxA].q;
+        document.getElementById('counter-hud-a').innerText = `(${curIdxA + 1}/${teamQA.length})`;
+        document.getElementById('score-hud-a').innerText = correctCountA * 10;
+        bufTeamA = '';
+        document.getElementById('input-display-team-a').innerText = '-';
+      } else {
+        document.getElementById('pure-q-team-a').innerText = '✅ Tim A Telah Selesai!';
+        checkTeamFinished();
+      }
+    }
+
+    function renderTeamQuestionB() {
+      if (curIdxB < teamQB.length) {
+        document.getElementById('pure-q-team-b').innerText = teamQB[curIdxB].q;
+        document.getElementById('counter-hud-b').innerText = `(${curIdxB + 1}/${teamQB.length})`;
+        document.getElementById('score-hud-b').innerText = correctCountB * 10;
+        bufTeamB = '';
+        document.getElementById('input-display-team-b').innerText = '-';
+      } else {
+        document.getElementById('pure-q-team-b').innerText = '✅ Tim B Telah Selesai!';
+        checkTeamFinished();
+      }
+    }
+
+    function pressTeamNumpad(team, key) {
+      if (team === 'A') {
+        if (curIdxA >= teamQA.length) return;
+        if (key === 'OK') {
+          if (!bufTeamA) return;
+          if (bufTeamA.trim() === teamQA[curIdxA].ans.trim()) {
+            sound.correct();
+            correctCountA++;
+          } else {
+            sound.wrong();
+            wrongCountA++;
+          }
+          curIdxA++;
+          clearCanvasScreen('canvas-team-a');
+          renderTeamQuestionA();
+        } else if (key === 'DEL') {
+          sound.pop();
+          bufTeamA = bufTeamA.slice(0, -1);
+          document.getElementById('input-display-team-a').innerText = bufTeamA || '-';
+        } else {
+          sound.numKey(key);
+          if (bufTeamA.length < 5) {
+            bufTeamA += key;
+            document.getElementById('input-display-team-a').innerText = bufTeamA;
+          }
+        }
+      } else {
+        if (curIdxB >= teamQB.length) return;
+        if (key === 'OK') {
+          if (!bufTeamB) return;
+          if (bufTeamB.trim() === teamQB[curIdxB].ans.trim()) {
+            sound.correct();
+            correctCountB++;
+          } else {
+            sound.wrong();
+            wrongCountB++;
+          }
+          curIdxB++;
+          clearCanvasScreen('canvas-team-b');
+          renderTeamQuestionB();
+        } else if (key === 'DEL') {
+          sound.pop();
+          bufTeamB = bufTeamB.slice(0, -1);
+          document.getElementById('input-display-team-b').innerText = bufTeamB || '-';
+        } else {
+          sound.numKey(key);
+          if (bufTeamB.length < 5) {
+            bufTeamB += key;
+            document.getElementById('input-display-team-b').innerText = bufTeamB;
+          }
+        }
+      }
+    }
+
+    function checkTeamFinished() {
+      if (curIdxA >= teamQA.length && curIdxB >= teamQB.length) {
+        sound.victory();
+        triggerConfetti(5000);
+        const scoreA = correctCountA * 10;
+        const scoreB = correctCountB * 10;
+
+        let champText = 'Pertandingan Seri!';
+        if (scoreA > scoreB) champText = `🏆 Juara: ${nameTeamA}!`;
+        else if (scoreB > scoreA) champText = `🏆 Juara: ${nameTeamB}!`;
+
+        saveTeamRank(nameTeamA, scoreA, scoreA >= scoreB ? 'Juara' : 'Kalah');
+        saveTeamRank(nameTeamB, scoreB, scoreB >= scoreA ? 'Juara' : 'Kalah');
+
+        document.getElementById('result-title').innerText = champText;
+        document.getElementById('result-subtitle').innerText = `${nameTeamA} (${scoreA} Poin) vs ${nameTeamB} (${scoreB} Poin)`;
+        document.getElementById('result-score-val').innerText = Math.max(scoreA, scoreB);
+        document.getElementById('result-correct-val').innerText = (scoreA >= scoreB ? correctCountA : correctCountB);
+        document.getElementById('result-wrong-val').innerText = (scoreA >= scoreB ? wrongCountA : wrongCountB);
+        document.getElementById('result-stars').innerText = '🎖️ PERTANDINGAN SERU 🎖️';
+
+        switchView('screen-result');
+      }
+    }
+
+    /* =========================================================
+       9. INTIP KELOMPOK MANDIRI (LEGA & TITIK KE-4 TERLIHAT)
+       ========================================================= */
+    let localTutType = { A: 'tut3', B: 'tut3' };
+    let localTutFingers = { A: new Array(10).fill(false), B: new Array(10).fill(false) };
+
+    function openTeamLocalTut(team) {
+      sound.pop();
+      document.getElementById('overlay-intip-' + team.toLowerCase()).classList.add('active');
+      setTeamLocalTut(team, localTutType[team]);
+    }
+
+    function closeTeamLocalTut(team) {
+      sound.pop();
+      document.getElementById('overlay-intip-' + team.toLowerCase()).classList.remove('active');
+    }
+
+    function setTeamLocalTut(team, type) {
+      sound.pop();
+      localTutType[team] = type;
+      currentTutMateri = type;
+      
+      const prefix = 'tab-intip-' + team.toLowerCase() + '-';
+      ['tut3', 'tut4', 'tut68', 'tut9'].forEach(t => {
+        const btn = document.getElementById(prefix + t);
+        if (btn) btn.classList.remove('active');
+      });
+      const activeBtn = document.getElementById(prefix + type);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      localTutFingers[team].fill(false);
+      renderTeamLocalFingers(team);
+      updateTeamLocalText(team);
+    }
+
+    function toggleTeamLocalFinger(team, idx) {
+      sound.pop();
+      localTutFingers[team][idx] = !localTutFingers[team][idx];
+      renderTeamLocalFingers(team);
+      updateTeamLocalText(team);
+    }
+
+    function renderTeamLocalFingers(team) {
+      const lEl = document.getElementById('fingers-local-' + team.toLowerCase() + '-left');
+      const rEl = document.getElementById('fingers-local-' + team.toLowerCase() + '-right');
+      lEl.innerHTML = '';
+      rEl.innerHTML = '';
+
+      const states = localTutFingers[team];
+      // Tinggi proporsional agar 4 titik ruas terlihat utuh
+      for (let i = 0; i < 5; i++) {
+        lEl.appendChild(createFingerPillDOM(i, leftH[i] * 0.85, true, states, (idx) => toggleTeamLocalFinger(team, idx)));
+      }
+      for (let i = 5; i < 10; i++) {
+        rEl.appendChild(createFingerPillDOM(i, rightH[i - 5] * 0.85, false, states, (idx) => toggleTeamLocalFinger(team, idx)));
+      }
+    }
+
+    function updateTeamLocalText(team) {
+      const txt = document.getElementById('text-local-' + team.toLowerCase());
+      const standing = localTutFingers[team].filter(f => !f).length;
+      const t = localTutType[team];
+
+      if (t === 'tut3') txt.innerHTML = `Berdiri: <strong>${standing} jari</strong> | Rumus: ${standing} x 3 = <strong>${standing * 3}</strong>`;
+      else if (t === 'tut4') txt.innerHTML = `Berdiri: <strong>${standing} jari</strong> | Rumus: ${standing} x 4 = <strong>${standing * 4}</strong>`;
+      else if (t === 'tut68') {
+        let stdL = 0, fldL = 0, stdR = 0, fldR = 0;
+        const st = localTutFingers[team];
+        for (let i = 0; i < 5; i++) { if (!st[i]) stdL++; else fldL++; }
+        for (let i = 5; i < 10; i++) { if (!st[i]) stdR++; else fldR++; }
+        let p = (stdL + stdR) * 10;
+        let s = fldL * fldR;
+        txt.innerHTML = `(${stdL}+${stdR})x10 = ${p} &nbsp;|&nbsp; ${fldL}x${fldR} = ${s} &nbsp;|&nbsp; <strong>Hasil: ${p+s}</strong>`;
+      } else {
+        let fIdx = localTutFingers[team].findIndex(f => f === true);
+        if (fIdx === -1) txt.innerHTML = `Lipat 1 jari pengali!`;
+        else {
+          let mult = fIdx + 1;
+          let tens = fIdx;
+          let units = 9 - fIdx;
+          txt.innerHTML = `9 x ${mult} &nbsp;|&nbsp; Puluhan: ${tens} &nbsp;|&nbsp; Satuan: ${units} &nbsp;|&nbsp; <strong>Hasil: ${(tens*10)+units}</strong>`;
+        }
+      }
+    }
+
+    /* =========================================================
+       10. PAPAN TULIS INTERAKTIF
+       ========================================================= */
+    const cvsHub = {};
+
+    function initScratchCanvas(id) {
+      const cvs = document.getElementById(id);
+      if (!cvs) return;
+      const rect = cvs.parentElement.getBoundingClientRect();
+      cvs.width = rect.width - 20 || 320;
+      cvs.height = rect.height - 40 || 220;
+
+      const ctx = cvs.getContext('2d');
+      ctx.lineWidth = 3.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#1E293B';
+      cvsHub[id] = { ctx, isDrawing: false };
+
+      function getXY(e) {
+        const b = cvs.getBoundingClientRect();
+        if (e.touches && e.touches[0]) return { x: e.touches[0].clientX - b.left, y: e.touches[0].clientY - b.top };
+        return { x: e.clientX - b.left, y: e.clientY - b.top };
+      }
+
+      cvs.onmousedown = (e) => {
+        e.preventDefault();
+        cvsHub[id].isDrawing = true;
+        const p = getXY(e);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+      };
+      cvs.onmousemove = (e) => {
+        if (!cvsHub[id].isDrawing) return;
+        e.preventDefault();
+        const p = getXY(e);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+      };
+      window.addEventListener('mouseup', () => { cvsHub[id].isDrawing = false; });
+
+      cvs.ontouchstart = (e) => {
+        e.preventDefault();
+        cvsHub[id].isDrawing = true;
+        const p = getXY(e);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+      };
+      cvs.ontouchmove = (e) => {
+        if (!cvsHub[id].isDrawing) return;
+        e.preventDefault();
+        const p = getXY(e);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+      };
+      cvs.ontouchend = () => { cvsHub[id].isDrawing = false; };
+    }
+
+    function clearCanvasScreen(id) {
+      sound.pop();
+      const cvs = document.getElementById(id);
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      ctx.clearRect(0, 0, cvs.width, cvs.height);
+    }
+
+    /* =========================================================
+       11. RANKING SYSTEM (LOCALSTORAGE)
+       ========================================================= */
+    function showRankingView() {
+      sound.pop();
+      switchView('screen-ranking');
+      renderRankingTables();
+    }
+
+    function toggleRankTab(tab) {
+      sound.pop();
+      if (tab === 'solo') {
+        document.getElementById('tab-btn-solo').classList.add('active');
+        document.getElementById('tab-btn-team').classList.remove('active');
+        document.getElementById('box-rank-solo').style.display = 'flex';
+        document.getElementById('box-rank-team').style.display = 'none';
+      } else {
+        document.getElementById('tab-btn-team').classList.add('active');
+        document.getElementById('tab-btn-solo').classList.remove('active');
+        document.getElementById('box-rank-team').style.display = 'flex';
+        document.getElementById('box-rank-solo').style.display = 'none';
+      }
+    }
+
+    function saveSoloRank(name, score, lvl) {
+      let ranks = JSON.parse(localStorage.getItem('jarimatika_rekor_solo_v4') || '[]');
+      ranks.push({ name, score, lvl, date: new Date().toLocaleDateString('id-ID') });
+      ranks.sort((a, b) => b.score - a.score);
+      localStorage.setItem('jarimatika_rekor_solo_v4', JSON.stringify(ranks.slice(0, 10)));
+    }
+
+    function saveTeamRank(name, score, status) {
+      let ranks = JSON.parse(localStorage.getItem('jarimatika_rekor_team_v4') || '[]');
+      ranks.push({ name, score, status, date: new Date().toLocaleDateString('id-ID') });
+      ranks.sort((a, b) => b.score - a.score);
+      localStorage.setItem('jarimatika_rekor_team_v4', JSON.stringify(ranks.slice(0, 10)));
+    }
+
+    function renderRankingTables() {
+      const soloList = JSON.parse(localStorage.getItem('jarimatika_rekor_solo_v4') || '[]');
+      const bSolo = document.getElementById('tbody-rank-solo');
+      bSolo.innerHTML = soloList.length ? '' : '<tr><td colspan="4" style="padding:15px; text-align:center;">Belum ada rekor individu.</td></tr>';
+      soloList.forEach((s, idx) => {
+        bSolo.innerHTML += `
+          <tr style="border-bottom: 1px solid #E2E8F0; text-align: center;">
+            <td style="padding:10px;"><strong>#${idx + 1}</strong></td>
+            <td style="padding:10px; font-weight:800; color:#0284C7;">${s.name}</td>
+            <td style="padding:10px;">${s.lvl === 'C3' ? 'Petualang Cepat' : (s.lvl === 'C4' ? 'Detektif Cerita' : 'Master')}</td>
+            <td style="padding:10px; font-weight:900; color:#16A34A; font-size:1.1rem;">${s.score}</td>
+          </tr>
+        `;
+      });
+
+      const teamList = JSON.parse(localStorage.getItem('jarimatika_rekor_team_v4') || '[]');
+      const bTeam = document.getElementById('tbody-rank-team');
+      bTeam.innerHTML = teamList.length ? '' : '<tr><td colspan="4" style="padding:15px; text-align:center;">Belum ada rekor kelompok.</td></tr>';
+      teamList.forEach((t, idx) => {
+        bTeam.innerHTML += `
+          <tr style="border-bottom: 1px solid #E2E8F0; text-align: center;">
+            <td style="padding:10px;"><strong>#${idx + 1}</strong></td>
+            <td style="padding:10px; font-weight:800; color:#BE123C;">${t.name}</td>
+            <td style="padding:10px;">${t.status === 'Juara' ? '🎉 Juara' : 'Kalah'}</td>
+            <td style="padding:10px; font-weight:900; color:#16A34A; font-size:1.1rem;">${t.score}</td>
+          </tr>
+        `;
+      });
+    }
+
+    function resetRankingHistory() {
+      if (confirm('Apakah kamu yakin ingin mereset seluruh papan rekor juara kelas?')) {
+        localStorage.removeItem('jarimatika_rekor_solo_v4');
+        localStorage.removeItem('jarimatika_rekor_team_v4');
+        sound.pop();
+        renderRankingTables();
+        alert('Papan juara berhasil dibersihkan!');
+      }
+    }
+
+    // Keyboard Laptop
+    window.addEventListener('keydown', (e) => {
+      const isSoloActive = document.getElementById('screen-game-solo').classList.contains('active');
+      if (isSoloActive) {
+        if (e.key >= '0' && e.key <= '9') pressSoloNumpad(e.key);
+        else if (e.key === 'Backspace') pressSoloNumpad('DEL');
+        else if (e.key === 'Enter') pressSoloNumpad('OK');
+      }
+    });
+  </script>
+</body>
+</html>
